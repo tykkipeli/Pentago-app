@@ -1,0 +1,23 @@
+.quadrant {
+    display: flex;
+    flex-wrap: wrap;
+    width: calc(3 * var(--cell-size));
+    height: calc(3 * var(--cell-size));
+    background-size: cover;
+  }
+  
+  .cell {
+    width: var(--cell-size);
+    height: var(--cell-size);
+    border: 0px solid #ccc;
+    box-sizing: border-box;
+  }
+  
+  :root {
+    --cell-size: 100px;
+  }
+  
+  .quadrant-wrapper {
+    position: relative;
+  }
+  

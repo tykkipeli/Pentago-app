@@ -1,0 +1,25 @@
+.cell {
+    position: relative;
+    width: var(--cell-size);
+    height: var(--cell-size);
+    z-index: 1;
+  }
+  
+  .marble {
+    width: 60%;
+    height: 60%;
+    border-radius: 50%;
+    position: absolute;
+    top: 20%;
+    left: 20%;
+    box-sizing: border-box;
+  }
+  
+  .marble-black {
+    background-color: black;
+  }
+  
+  .marble-white {
+    background-color: white;
+  }
+  
