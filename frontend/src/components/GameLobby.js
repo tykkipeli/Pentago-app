@@ -15,10 +15,18 @@ const GameLobby = () => {
     setSelectedUser(username);
   };
 
+  
   useEffect(() => {
+    const token = sessionStorage.getItem('token');
+    if (!token) {
+      navigate('/login');
+      return;
+    }
     //const newSocket = io('http://localhost:5000');
-    const newSocket = io('http://127.0.0.1:8000');
-
+    const newSocket = io('http://127.0.0.1:8000', {
+      query: { token },
+    });
+  
     setSocket(newSocket);
 
     newSocket.on('user_joined', (username) => {

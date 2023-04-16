@@ -11,53 +11,31 @@ import LoginPage from './components/LoginPage';
 import GameLobby from './components/GameLobby';
 import GamePage from './components/GamePage';
 
-/*
-function App() {
-  return (
-    <Router>
-      <nav>
-        <ul>
-          <li>
-            <Link to="/">Home</Link>
-          </li>
-          <li>
-            <Link to="/about">About</Link>
-          </li>
-        </ul>
-      </nav>
-      <main>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
-        </Routes>
-      </main>
-    </Router>
-  );
-}
-*/
-
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState('');
 
   useEffect(() => {
-    const savedUsername = localStorage.getItem('username');
-    if (savedUsername) {
-      setUsername(savedUsername);
+    const token = sessionStorage.getItem('token');
+    const savedUsername = sessionStorage.getItem('username');
+    if (token && savedUsername) {
       setIsLoggedIn(true);
+      setUsername(savedUsername);
     }
   }, []);
 
-  const handleLogin = (username) => {
-    setUsername(username);
+  const handleLogin = (token, username) => {
     setIsLoggedIn(true);
-    localStorage.setItem('username', username);
+    setUsername(username);
+    sessionStorage.setItem('token', token);
+    sessionStorage.setItem('username', username);
   };
 
   const handleLogout = () => {
-    setUsername('');
     setIsLoggedIn(false);
-    localStorage.removeItem('username');
+    setUsername('');
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('username');
   };
 
 

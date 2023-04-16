@@ -16,12 +16,13 @@ const LoginForm = ({ onLogin }) => {
 
     if (response.ok) {
       const data = await response.json();
-      // Call onLogin with the username
-      onLogin(username);
+      // Call onLogin with the token and username
+      onLogin(data.token, username);
     } else {
       // TODO: handle login error (e.g., display an error message)
     }
   };
+
 
   return (
     <form onSubmit={handleSubmit}>
