@@ -23,10 +23,15 @@ const GameLobby = () => {
       return;
     }
     //const newSocket = io('http://localhost:5000');
+    /*
     const newSocket = io('http://127.0.0.1:8000', {
       query: { token },
     });
-  
+    */
+    const socketUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:8000' : window.location.origin;
+    const newSocket = io(socketUrl, {
+      query: { token },
+    });
     setSocket(newSocket);
 
     newSocket.on('user_joined', (username) => {
@@ -46,12 +51,13 @@ const GameLobby = () => {
     });
 
     newSocket.on("connect", () => {
-      console.log("joining lobby");
+      console.log("joining lobby debug");
       newSocket.emit("join_lobby");
       newSocket.emit("request_users");
     });
 
     newSocket.on("challenge_received", (challenger) => {
+      console.log("Challenge received")
       setIncomingChallenge(challenger);
     });
 
@@ -68,6 +74,12 @@ const GameLobby = () => {
         setSelectedUser(null);
         setIsChallenging(false);
       }
+    });
+
+    newSocket.on("challenge_error", (errorMessage) => {
+      alert(errorMessage);
+      setSelectedUser(null);
+      setIsChallenging(false);
     });
 
     newSocket.on("game_started", ({ player1, player2, gameID }) => {
