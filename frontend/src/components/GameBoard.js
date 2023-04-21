@@ -22,10 +22,10 @@ function printBoardState(boardState) {
 
 const GameBoard = ({ onMove, currentPlayer, opponentMove, isLocalPlayerTurn }) => {
   const [board, setBoard] = useState(Array(6).fill(Array(6).fill(null)));
-  const [animationBoard, setAnimationBoard] = useState(null);
   const [quadrantRotations, setQuadrantRotations] = useState([0, 0, 0, 0]);
   const [marbleRotations, setMarbleRotations] = useState([0, 0, 0, 0]);
   const [currentAction, setCurrentAction] = useState({ type: null, placement: null, rotation: null });
+  const [animationRunning, setAnimationRunning] = useState(false);
 
   useEffect(() => {
     if (opponentMove) {
@@ -46,23 +46,20 @@ const GameBoard = ({ onMove, currentPlayer, opponentMove, isLocalPlayerTurn }) =
   const handleCellClick = (quadrant, row, col) => {
     const globalRow = (quadrant < 2 ? 0 : 3) + row;
     const globalCol = (quadrant % 2 === 0 ? 0 : 3) + col;
-
-    if (board[globalRow][globalCol] !== null || currentAction.placement || !isLocalPlayerTurn) {
+    if (board[globalRow][globalCol] !== null || currentAction.placement || !isLocalPlayerTurn || animationRunning) {
       return;
     }
-
     const placement = { row: globalRow, col: globalCol };
     setCurrentAction({ ...currentAction, type: "move", placement });
     placeMarble(placement, currentPlayer);
   };
 
   const handleArrowClick = (quadrant, direction) => {
-    if (currentAction.rotation || !isLocalPlayerTurn || !currentAction.placement) {
+    if (currentAction.rotation || !isLocalPlayerTurn || !currentAction.placement || animationRunning) {
       return;
     }
     const rotation = { quadrant, direction };
     setCurrentAction({ ...currentAction, rotation });
-
     const fullMove = { ...currentAction, rotation };
     onMove(fullMove);
     animateRotation(rotation, () => {
@@ -88,6 +85,7 @@ const GameBoard = ({ onMove, currentPlayer, opponentMove, isLocalPlayerTurn }) =
   };
 
   const animateRotation = (rotation, onAnimationEnd) => {
+    setAnimationRunning(true);
     const { quadrant, direction } = rotation;
 
     const startRotation = marbleRotations[quadrant];
@@ -97,7 +95,7 @@ const GameBoard = ({ onMove, currentPlayer, opponentMove, isLocalPlayerTurn }) =
     const startTime = performance.now();
 
     const animate = (time) => {
-      const animationTime = 5000;
+      const animationTime = 500;
       const progress = Math.min((time - startTime) / (0.36 * animationTime), 1);
       const currentRotation = startRotation + progress * (endRotation - startRotation);
       const currentQuadrantRotation = startQuadrantRotation + progress * (endQuadrantRotation - startQuadrantRotation);
@@ -115,6 +113,7 @@ const GameBoard = ({ onMove, currentPlayer, opponentMove, isLocalPlayerTurn }) =
         const finalRotations = [...marbleRotations];
         finalRotations[quadrant] = 0;
         setMarbleRotations(finalRotations);
+        setAnimationRunning(false);
       }
     };
     requestAnimationFrame(animate);

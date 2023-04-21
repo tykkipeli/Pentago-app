@@ -8,10 +8,53 @@ const Game = ({ player1, player2, gameID }) => {
   const [localPlayer, setLocalPlayer] = useState(null);
   const [currentPlayer, setCurrentPlayer] = useState(1);
   const [opponentMove, setOpponentMove] = useState(null);
+  const [gameResult, setGameResult] = useState(null);
+  const [playerTimes, setPlayerTimes] = useState({ 1: 10, 2: 10 });
   const token = sessionStorage.getItem('token');
 
+  const updatePlayerTimes = (player, newTime) => {
+    setPlayerTimes((prevTimes) => {
+      return { ...prevTimes, [player]: newTime };
+    });
+  };
+
   useEffect(() => {
-    console.log("current plaeyr: " + currentPlayer)
+    if (socket) {
+      socket.on("player_times_after_move", (data) => {
+        console.log("Updated player times after move:", data);
+        setPlayerTimes(data);
+      });
+
+      return () => {
+        socket.off("player_times_after_move");
+      };
+    }
+  }, [socket]);
+
+  const updatesPerSecond = 10;
+  const decimalPlaces = Math.ceil(Math.log10(updatesPerSecond));
+  useEffect(() => {
+    if (currentPlayer && !gameResult) {
+      const timer = setInterval(() => {
+        setPlayerTimes((prevTimes) => {
+          const updatedTimes = { ...prevTimes };
+          updatedTimes[currentPlayer] -= 1.0 / updatesPerSecond;
+
+          if (updatedTimes[currentPlayer] <= 0) {
+            updatedTimes[currentPlayer] = 0;
+            clearInterval(timer);
+          }
+
+          return updatedTimes;
+        });
+      }, 1000 / updatesPerSecond);
+
+      return () => clearInterval(timer);
+    }
+  }, [currentPlayer, gameResult]);
+
+  useEffect(() => {
+    console.log("current player: " + currentPlayer)
   }, [currentPlayer]);
 
   useEffect(() => {
@@ -25,26 +68,42 @@ const Game = ({ player1, player2, gameID }) => {
     newSocket.emit('join_game', { gameID, username });
 
     newSocket.on('game_info', (data) => {
-      console.log("gane_info receiced")
+      console.log("game_info received");
       setLocalPlayer(data.startingPlayer === username ? 1 : 2);
+      setPlayerTimes(data.playerTimes); // Set the initial player times from the server
     });
 
     newSocket.on('opponent_move', (move) => {
-      // Handle the opponent's move here
-      console.log("opponnen_move received")
+      console.log("opponent_move received")
       console.log(move);
       setOpponentMove(move);
       setCurrentPlayer((prevPlayer) => prevPlayer === 1 ? 2 : 1);
     });
 
-
     newSocket.on('game_over', (result) => {
       console.log("game over received")
+      let message = "";
       if (result.winner) {
-        // Handle the win, result.winner contains the winning player's symbol
+        const winnerUsername = result.winner === 1 ? player1 : player2;
+        message = `${winnerUsername} wins! `;
       } else if (result.draw) {
-        // Handle the draw
+        message = 'The game is a draw. ';
       }
+      if (result.reason === 'five_in_a_row') {
+        message += 'Five in a row!';
+      } else if (result.reason === 'time_out') {
+        const loser = result.winner === 1 ? 2 : 1;
+        const loserUsername = loser === 1 ? player1 : player2;
+        message += `${loserUsername} lost on time!`;
+        setPlayerTimes((prevTimes) => {
+          const updatedTimes = { ...prevTimes };
+          updatedTimes[loser] = 0;
+          return updatedTimes;
+        });
+      } else if (result.reason === 'disconnection') {
+        message += 'Opponent disconnected!';
+      }
+      setGameResult(message);
       setCurrentPlayer(null);
     });
 
@@ -52,7 +111,6 @@ const Game = ({ player1, player2, gameID }) => {
       newSocket.disconnect();
     };
   }, []);
-  
 
   const handleMove = (move) => {
     socket.emit('make_move', { gameID, move, player: currentPlayer });
@@ -63,9 +121,18 @@ const Game = ({ player1, player2, gameID }) => {
   return (
     <div>
       <h3>Game: {gameID}</h3>
-      <p>Player 1: {player1}</p>
-      <p>Player 2: {player2}</p>
-      <p>{isLocalPlayerTurn ? "Your Turn" : "Opponent's Turn"}</p>
+      <p>
+        Player 1: {player1} | Time: {Math.floor(playerTimes[1] / 60)}:
+        {String(Math.floor(playerTimes[1] % 60)).padStart(2, "0")}:
+        {String(Math.floor((playerTimes[1] % 1) * 10 ** decimalPlaces)).padStart(decimalPlaces, "0")}
+      </p>
+      <p>
+        Player 2: {player2} | Time: {Math.floor(playerTimes[2] / 60)}:
+        {String(Math.floor(playerTimes[2] % 60)).padStart(2, "0")}:
+        {String(Math.floor((playerTimes[2] % 1) * 10 ** decimalPlaces)).padStart(decimalPlaces, "0")}
+      </p>
+      {!gameResult && <p>{isLocalPlayerTurn ? "Your Turn" : "Opponent's Turn"}</p>}
+      {gameResult && <p>{gameResult}</p>}
       <GameBoard
         onMove={handleMove}
         currentPlayer={currentPlayer}
@@ -77,4 +144,3 @@ const Game = ({ player1, player2, gameID }) => {
 };
 
 export default Game;
-

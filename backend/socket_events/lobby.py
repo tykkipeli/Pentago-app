@@ -5,7 +5,10 @@ from auth import get_username_from_token
 from utils import users_in_lobby, challenges, sid_to_username, get_sid_by_username
 import time
 import random
+from .game_data import games, create_new_game
+from .game import handle_game_disconnect
 
+#TODO Resolve any concurrency issues related do shared data such as users_in_lobby, challenges or sid_to_username!
 
 @socketio.on("connect")
 def on_connect():
@@ -38,9 +41,11 @@ def on_leave_lobby(user=None):
         users_in_lobby.remove(user)
         emit("user_left", user, room="lobby", broadcast=True)
 
-@socketio.on("disconnect")
+@socketio.on('disconnect')
 def on_disconnect():
+    # Lobby-related disconnection handling
     username = sid_to_username.get(request.sid)
+    print(username, "disconnected")
     if username and username in users_in_lobby:
         on_leave_lobby(username)
     if username in challenges:
@@ -50,6 +55,8 @@ def on_disconnect():
         del challenges[username]
     if request.sid in sid_to_username:
         del sid_to_username[request.sid]
+    # Game-related disconnection handling
+    handle_game_disconnect(request.sid)
 
 @socketio.on("challenge")
 def on_challenge(challenged_username):
@@ -84,7 +91,15 @@ def on_accept_challenge():
         game_id = f"{challenger_username}-{challenged_username}-{time.time()}"
 
         # Notify both players that the game has started
-        emit("game_started", {"player1": challenger_username, "player2": challenged_username, "gameID": game_id}, room=game_room)
+        # Create a new game and get the randomized player order
+        game = create_new_game(game_id, challenger_username, challenged_username)
+        games[game_id] = game
+
+        # Notify both players that the game has started
+        emit("game_started", {
+            "player1": game['players'][0]['username'],
+            "player2": game['players'][1]['username'],
+            "gameID": game_id}, room=game_room)
 
         del challenges[challenger_username]
 
