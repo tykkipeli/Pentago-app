@@ -1,0 +1,34 @@
+.lobby-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.user-list {
+    list-style-type: none;
+    padding: 0;
+    width: 250px;
+}
+
+.user-list li {
+    background-color: #f1f1f1;
+    border: 1px solid #ddd;
+    cursor: pointer;
+    margin-bottom: -1px;
+    padding: 12px;
+}
+
+.user-list li:hover {
+    background-color: #ddd;
+}
+
+.user-list li.selected {
+    background-color: lightblue;
+}
+
+.button-container {
+    margin-bottom: 20px;
+}
+
+.chat-container {
+    width: 60%;
+}

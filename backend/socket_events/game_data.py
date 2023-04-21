@@ -3,7 +3,7 @@ import time
 
 games = {}
 
-def create_new_game(game_id, player1_username, player2_username, game_duration=10):
+def create_new_game(game_id, player1_username, player2_username, game_duration=600):
     player_order = [player1_username, player2_username]
     random.shuffle(player_order)
     return {

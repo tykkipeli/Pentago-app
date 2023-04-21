@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
 import { useNavigate } from 'react-router-dom';
+import ChatBox from './ChatBox';
+import './GameLobby.css';
 
 const GameLobby = () => {
   const [socket, setSocket] = useState(null);
@@ -65,6 +67,12 @@ const GameLobby = () => {
       setIncomingChallenge(null);
     });
 
+    newSocket.on("challenge_rejected", () => {
+      setSelectedUser(null);
+      setIsChallenging(false);
+    });
+
+    /*
     newSocket.on("challenge_result", (result) => {
       if (result === "accepted") {
         // this code is redundant:
@@ -75,6 +83,7 @@ const GameLobby = () => {
         setIsChallenging(false);
       }
     });
+    */
 
     newSocket.on("challenge_error", (errorMessage) => {
       alert(errorMessage);
@@ -94,6 +103,56 @@ const GameLobby = () => {
     };
   }, []);
 
+  return (
+    <div>
+      <h2>Game Lobby</h2>
+      <div className="lobby-container">
+        <div>
+          <ul className="user-list">
+            {users.map((username, index) => (
+              <li
+                key={index}
+                onClick={() => handleUserClick(username)}
+                className={selectedUser === username ? 'selected' : ''}
+              >
+                {username}
+              </li>
+            ))}
+          </ul>
+          <div className="button-container">
+            {selectedUser && !isChallenging && (
+              <button
+                onClick={() => {
+                  socket.emit('challenge', selectedUser);
+                  setIsChallenging(true);
+                }}
+              >
+                Challenge {selectedUser}
+              </button>
+            )}
+            {isChallenging && (
+              <button onClick={() => {
+                socket.emit("cancel_challenge");
+                setIsChallenging(false);
+              }}>Cancel challenge</button>
+            )}
+          </div>
+          {incomingChallenge && (
+            <>
+              <div>{incomingChallenge} has challenged you!</div>
+              <button onClick={() => socket.emit("accept_challenge")}>Accept</button>
+              <button onClick={() => {
+                socket.emit("reject_challenge");
+                setIncomingChallenge(null);
+              }}>Reject</button>
+            </>
+          )}
+        </div>
+        {socket && <div className="chat-container"><ChatBox socket={socket} room="lobby" /></div>}
+      </div>
+    </div>
+  );
+  /*
   return (
     <div>
       <h2>Game Lobby</h2>
@@ -134,8 +193,10 @@ const GameLobby = () => {
           }}>Reject</button>
         </>
       )}
+      {socket && <ChatBox socket={socket} room="lobby" />}
     </div>
   );
+  */
 };
 
 export default GameLobby;

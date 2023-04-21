@@ -5,6 +5,7 @@ from auth import get_username_from_token
 from utils import users_in_lobby, challenges, sid_to_username, get_sid_by_username
 import time
 import random
+import bleach
 from .game_data import games, create_new_game
 from .game import handle_game_disconnect
 
@@ -53,6 +54,13 @@ def on_disconnect():
         challenged_sid = get_sid_by_username(challenged_username)
         emit("challenge_canceled", room=challenged_sid)
         del challenges[username]
+    challenged_by = [challenger for challenger, challenged in challenges.items() if challenged == username]
+    if challenged_by:
+        challenger_username = challenged_by[0]
+        challenger_sid = get_sid_by_username(challenger_username)
+        emit("challenge_rejected", room=challenger_sid)
+        #emit("challenge_canceled", room=challenger_sid)
+        del challenges[challenger_username]
     if request.sid in sid_to_username:
         del sid_to_username[request.sid]
     # Game-related disconnection handling
@@ -112,8 +120,9 @@ def on_reject_challenge():
 
     if challenger_username:
         challenger_sid = get_sid_by_username(challenger_username)
-        emit("challenge_result", "rejected", room=challenger_sid)
-        emit("challenge_rejected", room=request.sid)
+        #emit("challenge_result", "rejected", room=challenger_sid)
+        #emit("challenge_rejected", room=request.sid)
+        emit("challenge_rejected", room=challenger_sid)
         del challenges[challenger_username]
 
 @socketio.on("cancel_challenge")
@@ -125,3 +134,25 @@ def on_cancel_challenge():
         challenged_sid = get_sid_by_username(challenged_username)
         emit("challenge_canceled", room=challenged_sid)
         del challenges[challenger_username]
+
+@socketio.on("send_message")
+def on_send_message(data):
+    message = data["message"]
+    room = data.get("room", "lobby")
+    username = sid_to_username.get(request.sid)
+    # Check if the player is in the game room
+    if room != "lobby":
+        game = games.get(room)
+        if not game:
+            return
+        player_usernames = [player["username"] for player in game["players"]]
+        if username not in player_usernames:
+            return
+    if not username or not message:
+        return
+    # Sanitize the message input
+    cleaned_message = bleach.clean(message, tags=[], strip=True)
+    emit("message", {"username": username, "text": cleaned_message}, room=room)
+
+
+
