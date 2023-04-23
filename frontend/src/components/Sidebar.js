@@ -24,15 +24,24 @@ const Sidebar = ({ isLoggedIn, username, onLogout }) => {
           </li>
         </ul>
         {isLoggedIn ? (
-        <>
-          <p>Logged in as: {username}</p>
-          <button onClick={onLogout}>Logout</button>
-        </>
-      ) : (
-        <NavLink to="/login" activeClassName="active">
-          Login
-        </NavLink>
-      )}
+          <>
+            <p>Logged in as: {username}</p>
+            <button onClick={onLogout}>Logout</button>
+          </>
+        ) : (
+          <ul>
+            <li>
+              <NavLink to="/login" activeClassName="active">
+                Login
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to="/signup" activeClassName="active">
+                Sign up
+              </NavLink>
+            </li>
+          </ul>
+        )}
       </nav>
     </div>
   );

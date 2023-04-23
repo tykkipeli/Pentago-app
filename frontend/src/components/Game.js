@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
 import GameBoard from './GameBoard';
 
+//TODO: make gameclock time calculation relative to the last time you received the clock times from the server
+
 const Game = ({ player1, player2, gameID, socket }) => {
   const [localPlayer, setLocalPlayer] = useState(null);
   const [currentPlayer, setCurrentPlayer] = useState(1);

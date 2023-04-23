@@ -10,6 +10,7 @@ import LoginForm from './components/LoginForm';
 import LoginPage from './components/LoginPage';
 import GameLobby from './components/GameLobby';
 import GamePage from './components/GamePage';
+import SignupPage from './components/SignupPage';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -56,6 +57,7 @@ function App() {
               path="/login"
               element={<LoginPage onLogin={handleLogin} />}
             />
+            <Route path="/signup" element={<SignupPage />} />
           </Routes>
         </div>
       </div>

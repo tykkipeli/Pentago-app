@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 const LoginForm = ({ onLogin }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState(''); // Add error state
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,11 +19,15 @@ const LoginForm = ({ onLogin }) => {
       const data = await response.json();
       // Call onLogin with the token and username
       onLogin(data.token, username);
+      setError('');
     } else {
-      // TODO: handle login error (e.g., display an error message)
+      // Handle login error
+      console.log("login error")
+      const data = await response.json();
+      setError(data.message);
+      setPassword('');
     }
   };
-
 
   return (
     <form onSubmit={handleSubmit}>
@@ -38,6 +43,7 @@ const LoginForm = ({ onLogin }) => {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
+      {error && <div className="error-message">{error}</div>} {/* Display error message */}
       <button type="submit">Login</button>
     </form>
   );
