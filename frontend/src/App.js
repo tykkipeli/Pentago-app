@@ -11,6 +11,8 @@ import LoginPage from './components/LoginPage';
 import GameLobby from './components/GameLobby';
 import GamePage from './components/GamePage';
 import SignupPage from './components/SignupPage';
+import AnalysisPage from './components/AnalysisPage';
+
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -52,6 +54,7 @@ function App() {
               element={isLoggedIn ? <GameLobby /> : <Navigate to="/login" />}
             />
             <Route path="/game" element={<GamePage />} />
+            <Route path="/analysis" element={<AnalysisPage />} />
             <Route path="/testi" element={<GameBoard />} />
             <Route
               path="/login"

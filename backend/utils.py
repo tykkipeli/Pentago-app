@@ -12,8 +12,8 @@ def print_game_board(board):
     for row in board:
         rivi = ""
         for x in row:
-            if x == "":
-                rivi += " "
+            if x == 0:
+                rivi += ' '
             else:
                 rivi += str(x)
             rivi += "|"
@@ -47,31 +47,31 @@ def is_game_over_on_board(board):
     # Check rows
     for row in board:
         for i in range(2):
-            if row[i:i+5] == [row[i]] * 5 and row[i] != '':
+            if row[i:i+5] == [row[i]] * 5 and row[i] != 0:
                 return True, row[i]
 
     # Check columns
     for col in range(6):
         for row in range(2):
-            if all(board[row+i][col] == board[row][col] for i in range(5)) and board[row][col] != '':
+            if all(board[row+i][col] == board[row][col] for i in range(5)) and board[row][col] != 0:
                 return True, board[row][col]
 
     # Check main diagonals
     for row in range(2):
         for col in range(2):
-            if all(board[row+i][col+i] == board[row][col] for i in range(5)) and board[row][col] != '':
+            if all(board[row+i][col+i] == board[row][col] for i in range(5)) and board[row][col] != 0:
                 return True, board[row][col]
 
     # Check secondary diagonals
     for row in range(2):
         for col in range(4, 6):
-            if all(board[row+i][col-i] == board[row][col] for i in range(5)) and board[row][col] != '':
+            if all(board[row+i][col-i] == board[row][col] for i in range(5)) and board[row][col] != 0:
                 return True, board[row][col]
 
     # Check for a draw
     for row in board:
         for cell in row:
-            if cell == '':
+            if cell == 0:
                 return False, None
 
     return True, None  # Draw
@@ -83,6 +83,6 @@ def is_valid_move(move, game):
     row, col = placement['row'], placement['col']
 
     # Check if the cell is empty
-    if board[row][col] == '':
+    if board[row][col] == 0:
         return True
     return False

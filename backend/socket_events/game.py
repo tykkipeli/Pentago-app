@@ -8,6 +8,9 @@ import random
 from gevent import sleep
 from .game_data import games, create_new_game
 from threading import Lock
+from bitboard import board_to_bitboards
+import datetime
+from database.db_utils import store_game_to_db, store_position_to_db, get_user_id
 
 games_lock = Lock()
 
@@ -70,11 +73,12 @@ def on_make_move(data):
                         return
                     emit_opponent_move(game_id, move)
                     update_game_position(game, move, player_index)
-                    perform_rotation(game, move)
                     switch_current_player(game, player_index)
                     print(game['playerTimes'])
                     emit("player_times_after_move", game["playerTimes"], room=game_id)
                     check_game_over(game, game_id)
+                    print(game['board'])
+                    print(game['board_history'])
 
 
 def find_player_index(game, request_sid):
@@ -91,7 +95,14 @@ def emit_opponent_move(game_id, move):
 def update_game_position(game, move, player_index):
     row, col = move['placement']['row'], move['placement']['col']
     game['board'][row][col] = game['players'][player_index]['symbol']
+    perform_rotation(game, move)
+    white_bitboard, black_bitboard = board_to_bitboards(game['board'])
+    game['board_history'].append((white_bitboard, black_bitboard))
 
+def perform_rotation(game, move):
+    quadrant = move['rotation']['quadrant']
+    direction = move['rotation']['direction']
+    game['board'] = rotate_quadrant(game['board'], quadrant, direction)
 
 def perform_rotation(game, move):
     quadrant = move['rotation']['quadrant']
@@ -145,9 +156,32 @@ def _update_player_times(game_id):
     return False
 
 
+#TODO when the game ends, the chat will no work anymore currently because the game gets removed from games dictionary
 def game_end(game_id, result, reason):
     socketio.emit('game_over', {**result, 'reason': reason}, room=game_id)
-    # TODO: Add your logic to save the game to the database here
+    
+    # Add the logic to store the game data in the database
+    game = games[game_id]
+    white_id = get_user_id(next(player["username"] for player in game["players"] if player["symbol"] == 1))
+    black_id = get_user_id(next(player["username"] for player in game["players"] if player["symbol"] == 2))
+    
+    if "winner" in result:
+        winner_id = get_user_id(next(player["username"] for player in game["players"] if player["symbol"] == result["winner"]))
+    else:
+        winner_id = None
+
+    move_count = sum(1 for row in game["board"] for cell in row if cell != 0)
+    date = datetime.datetime.now()
+
+    # Store the game in the games table and get the game_id
+    game_db_id = store_game_to_db(white_id, black_id, winner_id, date, move_count)
+
+    # Store the positions in the positions table
+    prev_position_id = None
+    for board in game["board_history"]:
+        white_bitboard, black_bitboard = board
+        prev_position_id = store_position_to_db(game_db_id, white_bitboard, black_bitboard, prev_position_id)
+
     del games[game_id]
 
 def handle_game_disconnect(sid):

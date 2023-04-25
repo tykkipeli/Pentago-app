@@ -6,11 +6,13 @@ import GameBoard from './GameBoard';
 //TODO: make gameclock time calculation relative to the last time you received the clock times from the server
 
 const Game = ({ player1, player2, gameID, socket }) => {
+  const [board, setBoard] = useState(Array(6).fill(Array(6).fill(null)));
   const [localPlayer, setLocalPlayer] = useState(null);
   const [currentPlayer, setCurrentPlayer] = useState(1);
   const [opponentMove, setOpponentMove] = useState(null);
   const [gameResult, setGameResult] = useState(null);
   const [playerTimes, setPlayerTimes] = useState({ 1: 10, 2: 10 });
+  const [animationRunning, setAnimationRunning] = useState(false);
 
   const updatePlayerTimes = (player, newTime) => {
     setPlayerTimes((prevTimes) => {
@@ -130,6 +132,10 @@ const Game = ({ player1, player2, gameID, socket }) => {
         currentPlayer={currentPlayer}
         opponentMove={opponentMove}
         isLocalPlayerTurn={isLocalPlayerTurn}
+        board={board} 
+        setBoard={setBoard}
+        animationRunning={animationRunning}
+        setAnimationRunning={setAnimationRunning}
       />
     </div>
   );

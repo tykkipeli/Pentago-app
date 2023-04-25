@@ -6,6 +6,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+#run app with this command: 
+#gunicorn --worker-class geventwebsocket.gunicorn.workers.GeventWebSocketWorker -w 1 wsgi:app
+
 app = Flask(__name__, static_folder='../frontend/build', template_folder='../frontend/build')
 app.secret_key = getenv("SECRET_KEY")
 app.config["SQLALCHEMY_DATABASE_URI"] = getenv("DATABASE_URL")
@@ -18,3 +21,6 @@ from socket_events import *
 
 if __name__ == "__main__":
     socketio.run(app)
+
+
+

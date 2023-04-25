@@ -4,7 +4,7 @@ from app import app
 from auth import get_username_from_token, create_encoded_token
 from utils import users_in_lobby
 from werkzeug.security import generate_password_hash, check_password_hash
-from models import Users
+from database.models import Users
 from app import db
 
 @app.route('/', defaults={'path': ''})

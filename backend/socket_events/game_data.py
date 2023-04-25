@@ -1,18 +1,22 @@
 import random
 import time
+from bitboard import board_to_bitboards
 
 games = {}
 
 def create_new_game(game_id, player1_username, player2_username, game_duration=600):
     player_order = [player1_username, player2_username]
     random.shuffle(player_order)
+    initial_board = [[0 for _ in range(6)] for _ in range(6)]
+    white_bitboard, black_bitboard = board_to_bitboards(initial_board)
     return {
         'players': [
             create_player_info(None, player_order[0], 1),
             create_player_info(None, player_order[1], 2),
         ],
         'currentPlayer': 1,
-        'board': [['' for _ in range(6)] for _ in range(6)],
+        'board': initial_board,
+        'board_history': [(white_bitboard, black_bitboard)],
         'playerTimes': {1: game_duration, 2: game_duration},
         'lastMoveTimestamp': time.time(),
     }
