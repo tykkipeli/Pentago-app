@@ -1,8 +1,12 @@
 import random
 import time
 from bitboard import board_to_bitboards
+from threading import Lock
 
 games = {}
+game_rooms = {}  # key: game_id, value: {'players': [player1, player2]}
+games_lock = Lock()
+game_rooms_lock = Lock()
 
 def create_new_game(game_id, player1_username, player2_username, game_duration=600):
     player_order = [player1_username, player2_username]

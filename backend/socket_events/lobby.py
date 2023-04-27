@@ -6,10 +6,11 @@ from utils import users_in_lobby, challenges, sid_to_username, get_sid_by_userna
 import time
 import random
 import bleach
-from .game_data import games, create_new_game
-from .game import handle_game_disconnect
+from .game_data import games, create_new_game, game_rooms
+from .game_socket import handle_game_disconnect
 
-#TODO Resolve any concurrency issues related do shared data such as users_in_lobby, challenges or sid_to_username!
+# TODO Resolve any concurrency issues related do shared data such as users_in_lobby, challenges or sid_to_username!
+
 
 @socketio.on("connect")
 def on_connect():
@@ -20,9 +21,11 @@ def on_connect():
     print("User", username, "connected")
     sid_to_username[request.sid] = username
 
+
 @socketio.on("request_users")
 def on_request_users():
     emit("users", list(users_in_lobby))
+
 
 @socketio.on("join_lobby")
 def on_join_lobby():
@@ -31,6 +34,7 @@ def on_join_lobby():
         join_room("lobby")
         users_in_lobby.add(username)
         emit("user_joined", username, room="lobby", broadcast=True)
+
 
 @socketio.on("leave_lobby")
 def on_leave_lobby(user=None):
@@ -41,6 +45,7 @@ def on_leave_lobby(user=None):
         leave_room("lobby")
         users_in_lobby.remove(user)
         emit("user_left", user, room="lobby", broadcast=True)
+
 
 @socketio.on('disconnect')
 def on_disconnect():
@@ -54,7 +59,8 @@ def on_disconnect():
         challenged_sid = get_sid_by_username(challenged_username)
         emit("challenge_canceled", room=challenged_sid)
         del challenges[username]
-    challenged_by = [challenger for challenger, challenged in challenges.items() if challenged == username]
+    challenged_by = [challenger for challenger,
+                     challenged in challenges.items() if challenged == username]
     if challenged_by:
         challenger_username = challenged_by[0]
         challenger_sid = get_sid_by_username(challenger_username)
@@ -66,6 +72,7 @@ def on_disconnect():
     # Game-related disconnection handling
     handle_game_disconnect(request.sid)
 
+
 @socketio.on("challenge")
 def on_challenge(challenged_username):
     challenger_username = sid_to_username.get(request.sid)
@@ -74,11 +81,13 @@ def on_challenge(challenged_username):
         return
     # Check if the challenger is already challenging someone or being challenged by someone
     if challenger_username in challenges or any(challenger_username in v for v in challenges.values()):
-        emit("challenge_error", f"You are already involved in a challenge.", room=request.sid)
+        emit("challenge_error",
+             f"You are already involved in a challenge.", room=request.sid)
         return
     # Check if the challenged user is already being challenged or challenging someone
     if challenged_username in challenges or any(challenged_username in v for v in challenges.values()):
-        emit("challenge_error", f"{challenged_username} is already involved in a challenge.", room=request.sid)
+        emit("challenge_error",
+             f"{challenged_username} is already involved in a challenge.", room=request.sid)
         return
     challenges[challenger_username] = challenged_username
     emit("challenge_received", challenger_username, room=challenged_sid)
@@ -87,7 +96,8 @@ def on_challenge(challenged_username):
 @socketio.on("accept_challenge")
 def on_accept_challenge():
     challenged_username = sid_to_username.get(request.sid)
-    challenger_username = next((k for k, v in challenges.items() if v == challenged_username), None)
+    challenger_username = next(
+        (k for k, v in challenges.items() if v == challenged_username), None)
     if challenger_username:
         challenger_sid = get_sid_by_username(challenger_username)
 
@@ -100,7 +110,11 @@ def on_accept_challenge():
 
         # Notify both players that the game has started
         # Create a new game and get the randomized player order
-        game = create_new_game(game_id, challenger_username, challenged_username)
+        game_rooms[game_id] = {
+            'players': [challenger_username, challenged_username ],
+        }
+        game = create_new_game(
+            game_id, challenger_username, challenged_username)
         games[game_id] = game
 
         # Notify both players that the game has started
@@ -112,11 +126,11 @@ def on_accept_challenge():
         del challenges[challenger_username]
 
 
-
 @socketio.on("reject_challenge")
 def on_reject_challenge():
     challenged_username = sid_to_username.get(request.sid)
-    challenger_username = next((k for k, v in challenges.items() if v == challenged_username), None)
+    challenger_username = next(
+        (k for k, v in challenges.items() if v == challenged_username), None)
 
     if challenger_username:
         challenger_sid = get_sid_by_username(challenger_username)
@@ -124,6 +138,7 @@ def on_reject_challenge():
         #emit("challenge_rejected", room=request.sid)
         emit("challenge_rejected", room=challenger_sid)
         del challenges[challenger_username]
+
 
 @socketio.on("cancel_challenge")
 def on_cancel_challenge():
@@ -135,6 +150,7 @@ def on_cancel_challenge():
         emit("challenge_canceled", room=challenged_sid)
         del challenges[challenger_username]
 
+
 @socketio.on("send_message")
 def on_send_message(data):
     message = data["message"]
@@ -142,17 +158,10 @@ def on_send_message(data):
     username = sid_to_username.get(request.sid)
     # Check if the player is in the game room
     if room != "lobby":
-        game = games.get(room)
-        if not game:
-            return
-        player_usernames = [player["username"] for player in game["players"]]
-        if username not in player_usernames:
+        if not room in game_rooms or not username in game_rooms[room]['players']:
             return
     if not username or not message:
         return
     # Sanitize the message input
     cleaned_message = bleach.clean(message, tags=[], strip=True)
     emit("message", {"username": username, "text": cleaned_message}, room=room)
-
-
-

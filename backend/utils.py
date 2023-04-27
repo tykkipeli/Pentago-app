@@ -75,14 +75,3 @@ def is_game_over_on_board(board):
                 return False, None
 
     return True, None  # Draw
-
-
-def is_valid_move(move, game):
-    board = game['board']
-    placement = move['placement']
-    row, col = placement['row'], placement['col']
-
-    # Check if the cell is empty
-    if board[row][col] == 0:
-        return True
-    return False

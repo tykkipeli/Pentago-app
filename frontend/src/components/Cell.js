@@ -7,7 +7,7 @@ const Cell = ({ value, onClick }) => {
     onClick();
   };
 
-  const marbleClass = value === 1 ? 'marble-black' : value === 2 ? 'marble-white' : '';
+  const marbleClass = value === 1 ? 'marble-white' : value === 2 ? 'marble-black' : '';
 
   return (
     <div className="cell" onClick={handleClick}>

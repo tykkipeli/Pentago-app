@@ -39,6 +39,7 @@ const Game = ({ player1, player2, gameID, socket }) => {
       socket.on('opponent_move', (move) => {
         console.log("opponent_move received")
         console.log(move);
+        console.log(`within socketEvent: ${currentPlayer}`);
         setOpponentMove(move);
         setCurrentPlayer((prevPlayer) => prevPlayer === 1 ? 2 : 1);
       });
@@ -129,7 +130,6 @@ const Game = ({ player1, player2, gameID, socket }) => {
       {gameResult && <p>{gameResult}</p>}
       <GameBoard
         onMove={handleMove}
-        currentPlayer={currentPlayer}
         opponentMove={opponentMove}
         isLocalPlayerTurn={isLocalPlayerTurn}
         board={board} 

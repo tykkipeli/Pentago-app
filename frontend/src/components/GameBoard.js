@@ -1,6 +1,6 @@
 // src/components/GameBoard.js
 import React, { useState, useEffect } from 'react';
-import { rotateCW, rotateCCW, rotateQuadrant } from '../utils/boardUtils';
+import { rotateCW, rotateCCW, rotateQuadrant , getCurrentPlayer} from '../utils/boardUtils';
 import Quadrant from './Quadrant';
 import './GameBoard.css';
 import quadrant1Image from '../assets/vasenyla.png';
@@ -22,7 +22,6 @@ function printBoardState(boardState) {
 
 const GameBoard = ({
   onMove,
-  currentPlayer,
   opponentMove,
   isLocalPlayerTurn,
   reverseMove,
@@ -42,7 +41,7 @@ const GameBoard = ({
         setMoveQueue((prevQueue) => [...prevQueue, opponentMove]);
       } else {
         const { placement, rotation } = opponentMove;
-        const newBoard = placeMarble(placement, currentPlayer === 1 ? 2 : 1);
+        const newBoard = placeMarble(placement);
         animateRotation(rotation, () => {
           updateBoardWithRotation(rotation, newBoard);
         });
@@ -74,7 +73,7 @@ const GameBoard = ({
     const nextMove = moveQueue[0];
     setMoveQueue((prevQueue) => prevQueue.slice(1)); // remove the first move from the queue
     const { placement, rotation } = nextMove;
-    const newBoard = placeMarble(placement, currentPlayer === 1 ? 2 : 1);
+    const newBoard = placeMarble(placement);
     animateRotation(rotation, () => {
       updateBoardWithRotation(rotation, newBoard);
     });
@@ -95,7 +94,7 @@ const GameBoard = ({
     }
     const placement = { row: globalRow, col: globalCol };
     setCurrentAction({ ...currentAction, type: "move", placement });
-    placeMarble(placement, currentPlayer);
+    placeMarble(placement);
   };
 
   const handleArrowClick = (quadrant, direction) => {
@@ -118,7 +117,8 @@ const GameBoard = ({
     setBoard(newBoard);
   };
 
-  const placeMarble = (placement, player) => {
+  const placeMarble = (placement) => {
+    const player = getCurrentPlayer(board);
     const newBoard = board.map((r, rowIndex) =>
       r.map((cell, colIndex) =>
         rowIndex === placement.row && colIndex === placement.col ? player : cell

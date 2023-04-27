@@ -10,7 +10,7 @@ from .lobby import (
     on_cancel_challenge,
 )
 
-from .game import (
+from .game_socket import (
     on_join_game,
     on_leave_game,
     on_make_move,
