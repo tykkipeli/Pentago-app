@@ -13,6 +13,8 @@ const Game = ({ player1, player2, gameID, socket }) => {
   const [gameResult, setGameResult] = useState(null);
   const [playerTimes, setPlayerTimes] = useState({ 1: 10, 2: 10 });
   const [animationRunning, setAnimationRunning] = useState(false);
+  const [player1Rating, setPlayer1Rating] = useState(0);
+  const [player2Rating, setPlayer2Rating] = useState(0);
 
   const updatePlayerTimes = (player, newTime) => {
     setPlayerTimes((prevTimes) => {
@@ -34,8 +36,10 @@ const Game = ({ player1, player2, gameID, socket }) => {
         console.log("game_info received");
         setLocalPlayer(data.startingPlayer === username ? 1 : 2);
         setPlayerTimes(data.playerTimes); // Set the initial player times from the server
+        setPlayer1Rating(data.player1Rating);
+        setPlayer2Rating(data.player2Rating);
       });
-  
+
       socket.on('opponent_move', (move) => {
         console.log("opponent_move received")
         console.log(move);
@@ -43,7 +47,7 @@ const Game = ({ player1, player2, gameID, socket }) => {
         setOpponentMove(move);
         setCurrentPlayer((prevPlayer) => prevPlayer === 1 ? 2 : 1);
       });
-  
+
       socket.on('game_over', (result) => {
         console.log("game over received")
         let message = "";
@@ -117,12 +121,12 @@ const Game = ({ player1, player2, gameID, socket }) => {
     <div>
       <h3>Game: {gameID}</h3>
       <p>
-        Player 1: {player1} | Time: {Math.floor(playerTimes[1] / 60)}:
+        Player 1: {player1} | Rating: {player1Rating} | Time: {Math.floor(playerTimes[1] / 60)}:
         {String(Math.floor(playerTimes[1] % 60)).padStart(2, "0")}:
         {String(Math.floor((playerTimes[1] % 1) * 10 ** decimalPlaces)).padStart(decimalPlaces, "0")}
       </p>
       <p>
-        Player 2: {player2} | Time: {Math.floor(playerTimes[2] / 60)}:
+        Player 2: {player2} | Rating: {player2Rating} | Time: {Math.floor(playerTimes[2] / 60)}:
         {String(Math.floor(playerTimes[2] % 60)).padStart(2, "0")}:
         {String(Math.floor((playerTimes[2] % 1) * 10 ** decimalPlaces)).padStart(decimalPlaces, "0")}
       </p>
@@ -132,7 +136,7 @@ const Game = ({ player1, player2, gameID, socket }) => {
         onMove={handleMove}
         opponentMove={opponentMove}
         isLocalPlayerTurn={isLocalPlayerTurn}
-        board={board} 
+        board={board}
         setBoard={setBoard}
         animationRunning={animationRunning}
         setAnimationRunning={setAnimationRunning}

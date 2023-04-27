@@ -8,6 +8,7 @@ from threading import Lock
 from .game_logic import is_valid_move, update_game_position, switch_current_player, check_game_over, find_player_index, is_current_player, game_end
 from .game_database import store_game_result
 from .game_background import update_player_times, background_task
+from database.db_utils import get_user_rating
 import time
 
 
@@ -33,9 +34,14 @@ def on_join_game(data):
         if all(player.get('sid') is not None for player in game['players']):
             game['lastMoveTimestamp'] = time.time()
             starting_player = next(player for player in game['players'] if player['symbol'] == game['currentPlayer'])
+            other_player = next(player for player in game['players'] if player['symbol'] != game['currentPlayer'])
+            player1_rating = get_user_rating(starting_player['username'])
+            player2_rating = get_user_rating(other_player['username'])
             emit('game_info', {
                 'startingPlayer': starting_player['username'],
-                'playerTimes': game['playerTimes']}, room=game_id)
+                'playerTimes': game['playerTimes'],
+                'player1Rating': player1_rating,
+                'player2Rating': player2_rating}, room=game_id)
 
 @socketio.on('leave_game')
 def on_leave_game(data):
@@ -83,7 +89,8 @@ def handle_game_disconnect(sid):
         for game_id, game in games.items():
             player = next((player for player in game["players"] if player.get("sid") == sid), None)
             if player:
-                result = {'disconnected': player['username']}
+                winner_symbol = 1 if player['symbol'] == 2 else 2
+                result = {'winner': winner_symbol}
                 game_end(game_id, result, 'disconnection')
                 break
     with game_rooms_lock:
