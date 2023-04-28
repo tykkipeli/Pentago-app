@@ -4,7 +4,7 @@ import Node from './Node';
 import { rotateQuadrant } from '../utils/boardUtils';
 import { generateAllPossibleMoves, boardToBitboards, getNextBoard, getPreviousBoard } from '../utils/boardUtils';
 import PositionItem from './PositionItem';
-//import './AnalysisPage.css';
+import './AnalysisPage.css';
 
 const boardToString = (board) => {
   return board.map((row) => row.map(cell => cell === null ? 'x' : cell).join('')).join('/');
@@ -152,18 +152,26 @@ const AnalysisPage = () => {
 
   return (
     <div className="analysis">
-      <GameBoard
-        onMove={handleMove}
-        opponentMove={opponentMove}
-        isLocalPlayerTurn={true}
-        reverseMove={reverseMove}
-        board={board}
-        setBoard={setBoard}
-        animationRunning={animationRunning}
-        setAnimationRunning={setAnimationRunning}
-      />
-      <button onClick={handlePreviousMove}>&larr;</button>
-      <button onClick={handleNextMove}>&rarr;</button>
+      <div className="game-board-container">
+        <GameBoard
+          onMove={handleMove}
+          opponentMove={opponentMove}
+          isLocalPlayerTurn={true}
+          reverseMove={reverseMove}
+          board={board}
+          setBoard={setBoard}
+          animationRunning={animationRunning}
+          setAnimationRunning={setAnimationRunning}
+        />
+        <div className="arrow-buttons">
+          <button className="arrow-button" onClick={handlePreviousMove}>
+            &larr;
+          </button>
+          <button className="arrow-button" onClick={handleNextMove}>
+            &rarr;
+          </button>
+        </div>
+      </div>
       <div className="next-positions">
         {nextPositions.map((position, index) => (
           <PositionItem

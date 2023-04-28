@@ -1,0 +1,44 @@
+.analysis {
+    display: flex;
+    justify-content: center;
+}
+
+.game-board-container {
+    margin-right: 20px;
+}
+
+.next-positions {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    max-height: 800px;
+    /* Adjust this value based on the game board height */
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 300px;
+    padding: 5px;
+}
+
+.arrow-buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.arrow-button {
+    background-color: #ccc;
+    border: none;
+    border-radius: 3px;
+    color: #333;
+    cursor: pointer;
+    font-size: 50px;
+    margin: 0 5px;
+    padding: 10px 15px;
+    text-align: center;
+    transition: background-color 0.2s;
+}
+
+.arrow-button:hover {
+    background-color: #bbb;
+}

@@ -1,23 +1,36 @@
-.sidebar {
-  width: 200px;
-  background-color: #f0f0f0;
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: hsl(184, 83%, 35%);
   padding: 1rem;
+  width: 100%;
 }
 
-.sidebar ul {
+.nav-links,
+.auth-links {
+  display: flex;
+}
+
+.nav-links ul,
+.auth-links ul {
+  display: flex;
   list-style-type: none;
   padding: 0;
 }
 
-.sidebar li {
-  margin-bottom: 1rem;
+.nav-links li,
+.auth-links li {
+  margin-right: 1rem;
 }
 
-.sidebar a {
+.nav-links a,
+.auth-links a {
   text-decoration: none;
   color: #333;
 }
 
-.sidebar a.active {
+.nav-links a.active,
+.auth-links a.active {
   font-weight: bold;
 }

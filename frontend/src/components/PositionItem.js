@@ -18,19 +18,38 @@ const PositionItem = ({ position, onClick }) => {
   };
 
   const moveText = position.move
-    ? `(${position.move.placement.row+1},${position.move.placement.col+1}) ${quadrantText(position.move.rotation.quadrant)} ${position.move.rotation.direction}`
+    ? `(${position.move.placement.row + 1},${position.move.placement.col + 1}) ${quadrantText(position.move.rotation.quadrant)} ${position.move.rotation.direction}`
     : "";
+
+  const totalWins = position.white_wins + position.black_wins;
+  const whiteWinsPercentage = (position.white_wins / totalWins) * 100;
+  const blackWinsPercentage = (position.black_wins / totalWins) * 100;
 
   return (
     <div className="position-item" onClick={() => onClick(position)}>
       <div className="position-details">
         <div>Move: {moveText}</div>
         <div>Times reached: {position.times_reached}</div>
-        <div>White wins: {position.white_wins}</div>
-        <div>Black wins: {position.black_wins}</div>
+        <div className="win-bar-container">
+          <div
+            className="win-bar"
+            style={{
+              width: `${whiteWinsPercentage}%`,
+              backgroundColor: 'white',
+            }}
+          ></div>
+          <div
+            className="win-bar"
+            style={{
+              width: `${blackWinsPercentage}%`,
+              backgroundColor: 'black',
+              left: `${whiteWinsPercentage}%`,
+            }}
+          ></div>
+        </div>
       </div>
     </div>
   );
 };
-
+    
 export default PositionItem;

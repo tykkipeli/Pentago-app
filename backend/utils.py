@@ -1,3 +1,5 @@
+import copy
+
 users_in_lobby = set()
 challenges = {}
 sid_to_username = {}
@@ -36,7 +38,8 @@ def rotate_quadrant(board, quadrant, direction):
         rotated_quadrant = [[quadrant_data[2 - j][i]
                              for j in range(3)] for i in range(3)]
 
-    new_board = board.copy()
+    new_board = copy.deepcopy(board)
+    #new_board = board.copy()
     for i in range(3):
         for j in range(3):
             new_board[start_row + i][start_col + j] = rotated_quadrant[i][j]

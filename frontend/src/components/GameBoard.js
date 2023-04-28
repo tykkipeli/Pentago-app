@@ -150,7 +150,7 @@ const GameBoard = ({
     const startTime = performance.now();
 
     const animate = (time) => {
-      const animationTime = 2000;
+      const animationTime = 1000;
       const progress = Math.min((time - startTime) / (0.36 * animationTime), 1);
       const currentRotation = startRotation + progress * (endRotation - startRotation);
       const currentQuadrantRotation = startQuadrantRotation + progress * (endQuadrantRotation - startQuadrantRotation);

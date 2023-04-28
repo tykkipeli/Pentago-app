@@ -4,8 +4,8 @@ import './Sidebar.css';
 
 const Sidebar = ({ isLoggedIn, username, onLogout }) => {
   return (
-    <div className="sidebar">
-      <nav>
+    <div className="topbar">
+      <nav className="nav-links">
         <ul>
           <li>
             <NavLink to="/" exact activeClassName="active">
@@ -28,6 +28,8 @@ const Sidebar = ({ isLoggedIn, username, onLogout }) => {
             </NavLink>
           </li>
         </ul>
+      </nav>
+      <nav className="auth-links">
         {isLoggedIn ? (
           <>
             <p>Logged in as: {username}</p>
