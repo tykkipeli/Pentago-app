@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes, Link, Navigate} from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Link, Navigate } from 'react-router-dom';
 import Home from './components/Home';
 import About from './components/About';
 import GameBoard from './components/GameBoard';
@@ -12,6 +12,8 @@ import GameLobby from './components/GameLobby';
 import GamePage from './components/GamePage';
 import SignupPage from './components/SignupPage';
 import AnalysisPage from './components/AnalysisPage';
+import RankingPage from './components/RankingPage';
+import ProfilePage from './components/ProfilePage';
 
 
 function App() {
@@ -55,6 +57,11 @@ function App() {
             />
             <Route path="/game" element={<GamePage />} />
             <Route path="/analysis" element={<AnalysisPage />} />
+            <Route path="/ranking" element={<RankingPage />} />
+            <Route
+              path="/profile/:username"
+              element={isLoggedIn ? <ProfilePage /> : <Navigate to="/login" />}
+            />
             <Route path="/testi" element={<GameBoard />} />
             <Route
               path="/login"

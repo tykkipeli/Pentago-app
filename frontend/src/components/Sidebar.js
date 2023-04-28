@@ -23,7 +23,12 @@ const Sidebar = ({ isLoggedIn, username, onLogout }) => {
             </NavLink>
           </li>
           <li>
-            <NavLink to="/profile" activeClassName="active">
+            <NavLink to="/ranking" activeClassName="active">
+              Ranking
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to={`/profile/${username}`} activeClassName="active">
               Profile
             </NavLink>
           </li>

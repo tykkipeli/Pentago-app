@@ -6,6 +6,13 @@ class Users(db.Model):
     password = db.Column(db.String(120), nullable=False)
     rating = db.Column(db.Float, nullable=True)
 
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'username': self.username,
+            'rating': self.rating
+        }
+
     def __repr__(self):
         return f'<User {self.username}>'
     
