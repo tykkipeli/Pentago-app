@@ -99,8 +99,24 @@ const boardToBitboards = (board) => {
       }
     }
   }
-
   return { whiteBitboard, blackBitboard };
+};
+
+const bitboardsToBoard = (whiteBitboard, blackBitboard) => {
+  const board = Array(6).fill(null).map(() => Array(6).fill(null));
+  for (let row = 0; row < 6; row++) {
+    for (let col = 0; col < 6; col++) {
+      const position = row * 6 + col;
+      if ((whiteBitboard & (BigInt(1) << BigInt(position))) !== BigInt(0)) {
+        board[row][col] = 1;
+      } else if ((blackBitboard & (BigInt(1) << BigInt(position))) !== BigInt(0)) {
+        board[row][col] = 2;
+      } else {
+        board[row][col] = null;
+      }
+    }
+  }
+  return board;
 };
 
 const generateAllPossibleMoves = (board) => {
@@ -131,6 +147,54 @@ const generateAllPossibleMoves = (board) => {
   return allMovesMap;
 };
 
+const boardToString = (board) => {
+  return board.map((row) => row.map(cell => cell === null ? 'x' : cell).join('')).join('/');
+};
+
+const boardCopy = (board) => {
+  return board.map((row) => [...row]);
+};
+
+const getMoveFromBoards = (prevBoard, goalBoard) => {
+  const currentPlayer = getCurrentPlayer(prevBoard);
+  for (let row = 0; row < 6; row++) {
+    for (let col = 0; col < 6; col++) {
+      if (prevBoard[row][col] === null) {
+        for (let quadrant = 0; quadrant < 4; quadrant++) {
+          for (const direction of ['cw', 'ccw']) {
+            let newBoard = prevBoard.map((rowArr, rowIndex) =>
+              rowArr.map((cell, colIndex) =>
+                rowIndex === row && colIndex === col ? currentPlayer : cell
+              )
+            );
+            newBoard = rotateQuadrant(newBoard, quadrant, direction);
+            if (boardToString(newBoard) === boardToString(goalBoard)) {
+              const move = { placement: { row: row, col: col }, rotation: { quadrant, direction } };
+              return move;
+            }
+          }
+        }
+      }
+    }
+  }
+  return null;
+};
 
 
-export { rotateCW, rotateCCW, rotateQuadrant, boardToBitboards, generateAllPossibleMoves, getCurrentPlayer, getPreviousBoard, getNextBoard };
+
+
+export { 
+  rotateCW, 
+  rotateCCW, 
+  rotateQuadrant, 
+  boardToBitboards, 
+  generateAllPossibleMoves, 
+  getCurrentPlayer, 
+  getPreviousBoard, 
+  getNextBoard, 
+  removeMarble,
+  bitboardsToBoard,
+  getMoveFromBoards,
+  boardToString,
+  boardCopy
+};

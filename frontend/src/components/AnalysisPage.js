@@ -1,20 +1,14 @@
+/* global BigInt */
 import React, { useState, useEffect } from 'react';
 import GameBoard from './GameBoard';
 import Node from './Node';
-import { rotateQuadrant } from '../utils/boardUtils';
-import { generateAllPossibleMoves, boardToBitboards, getNextBoard, getPreviousBoard } from '../utils/boardUtils';
+import { loadGameData, fetchNextPositions } from '../utils/api';
+import { rotateQuadrant, getMoveFromBoards, boardToString, boardCopy } from '../utils/boardUtils';
+import { generateAllPossibleMoves, boardToBitboards, getNextBoard, getPreviousBoard, removeMarble, bitboardsToBoard, } from '../utils/boardUtils';
 import PositionItem from './PositionItem';
+import { useParams } from 'react-router-dom';
 import './AnalysisPage.css';
 
-const boardToString = (board) => {
-  return board.map((row) => row.map(cell => cell === null ? 'x' : cell).join('')).join('/');
-};
-
-const boardCopy = (board) => {
-  return board.map((row) => [...row]);
-};
-
-// TODO: If a marble has been placed without rotation and a prev/next button gets clikced in analysis mode, it messes up all the states!
 const AnalysisPage = () => {
   const [animationRunning, setAnimationRunning] = useState(false);
   const [board, setBoard] = useState(Array(6).fill(Array(6).fill(null)));
@@ -24,37 +18,13 @@ const AnalysisPage = () => {
   const [currentNode, setCurrentNode] = useState(new Node(null));
   const [visitedNodes, setVisitedNodes] = useState(new Map());
   const [nextPositions, setNextPositions] = useState([]);
+  const [currentAction, setCurrentAction] = useState({ type: null, placement: null, rotation: null });
+  const { gameId } = useParams();
 
   const fetchNextPositionsFromServer = async (newBoard) => {
-    const { whiteBitboard, blackBitboard } = boardToBitboards(newBoard);
-    console.log(whiteBitboard, blackBitboard);
-    console.table(newBoard);
-    try {
-      const response = await fetch(`/api/positions/${whiteBitboard}/${blackBitboard}`);
-      const data = await response.json();
-      if (response.ok) {
-        const boardKey = boardToString(newBoard);
-
-        // Generate next positions with moves
-        const allMovesMap = generateAllPossibleMoves(newBoard);
-        const nextPositionsMoves = data.next_positions.map((position) => {
-          const key = `${position.white_bb},${position.black_bb}`;
-          return {
-            ...position,
-            move: allMovesMap.get(key),
-          };
-        });
-        console.log(nextPositionsMoves);
-        setNextPositions(nextPositionsMoves);
-      } else {
-        console.log('Error:', data.error);
-      }
-    } catch (error) {
-      console.error('Error fetching position information:', error);
-    }
+    const nextPositionsMoves = await fetchNextPositions(newBoard);
+    setNextPositions(nextPositionsMoves);
   };
-
-
 
   const initialBoardKey = boardToString(board);
   const initialNode = new Node(null);
@@ -69,14 +39,26 @@ const AnalysisPage = () => {
   }, []);
 
   useEffect(() => {
+    if (gameId) {
+      loadGameData(gameId, initialNode).then((initialVisitedNodes) => {
+        if (initialVisitedNodes) {
+          setVisitedNodes(initialVisitedNodes);
+        } else {
+          console.log("Error: initialVisitedNodes is not defined");
+        }
+      });
+    }
+  }, [gameId]);  
+
+
+  useEffect(() => {
     //console.log(currentNode);
   }, [currentNode]);
 
+
   const handleMoveWithBoard = (move, newBoard) => {
     fetchNextPositionsFromServer(newBoard);
-
     const boardKey = boardToString(newBoard);
-    console.log(boardKey);
 
     setCurrentPlayer((prevPlayer) => (prevPlayer === 1 ? 2 : 1));
     setOpponentMove(null);
@@ -103,8 +85,22 @@ const AnalysisPage = () => {
     handleMoveWithBoard(move, newBoard);
   };
 
+  const currentActionisIncomplete = () => {
+    if (currentAction.placement) {
+      setBoard((prevBoard) => {
+        return removeMarble(prevBoard, currentAction.placement);
+      });
+      setCurrentAction({ type: null, placement: null, rotation: null });
+      return true;
+    }
+    return false;
+  };
+
   const handlePreviousMove = () => {
     if (animationRunning) {
+      return;
+    }
+    if (currentActionisIncomplete()) {
       return;
     }
     setOpponentMove(null);
@@ -127,6 +123,9 @@ const AnalysisPage = () => {
     if (animationRunning) {
       return;
     }
+    if (currentActionisIncomplete()) {
+      return;
+    }
     setReverseMove(null);
     setCurrentNode((prevNode) => {
       if (!prevNode.next) {
@@ -143,11 +142,11 @@ const AnalysisPage = () => {
     if (animationRunning) {
       return;
     }
+    if (currentActionisIncomplete()) {
+      return;
+    }
     handleMoveWithBoard(move, getNextBoard(board, move));
     setOpponentMove(move);
-    console.log("TÄSSÄ:")
-    console.table(getNextBoard(board, move));
-    console.log(move);
   };
 
   return (
@@ -162,6 +161,8 @@ const AnalysisPage = () => {
           setBoard={setBoard}
           animationRunning={animationRunning}
           setAnimationRunning={setAnimationRunning}
+          currentAction={currentAction}
+          setCurrentAction={setCurrentAction}
         />
         <div className="arrow-buttons">
           <button className="arrow-button" onClick={handlePreviousMove}>

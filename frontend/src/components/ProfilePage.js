@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import './ProfilePage.css';
 
 const ProfilePage = () => {
@@ -7,6 +7,7 @@ const ProfilePage = () => {
   const [recentGames, setRecentGames] = useState(null);
   const [gamePage, setGamePage] = useState(1);
   const { username } = useParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchUserProfile(username);
@@ -105,7 +106,7 @@ const ProfilePage = () => {
           </thead>
           <tbody>
             {recentGames.games.map((game) => (
-              <tr key={game.id}>
+              <tr key={game.id} onClick={() => navigate(`/analysis/${game.id}`)}>
                 <td>{game.white_username}</td>
                 <td>{game.black_username}</td>
                 <td>{game.move_count}</td>

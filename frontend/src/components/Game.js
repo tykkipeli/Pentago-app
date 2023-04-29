@@ -7,6 +7,7 @@ import GameBoard from './GameBoard';
 
 const Game = ({ player1, player2, gameID, socket }) => {
   const [board, setBoard] = useState(Array(6).fill(Array(6).fill(null)));
+  const [currentAction, setCurrentAction] = useState({ type: null, placement: null, rotation: null });
   const [localPlayer, setLocalPlayer] = useState(null);
   const [currentPlayer, setCurrentPlayer] = useState(1);
   const [opponentMove, setOpponentMove] = useState(null);
@@ -140,6 +141,8 @@ const Game = ({ player1, player2, gameID, socket }) => {
         setBoard={setBoard}
         animationRunning={animationRunning}
         setAnimationRunning={setAnimationRunning}
+        currentAction={currentAction}
+        setCurrentAction={setCurrentAction}
       />
     </div>
   );

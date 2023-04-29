@@ -57,6 +57,7 @@ function App() {
             />
             <Route path="/game" element={<GamePage />} />
             <Route path="/analysis" element={<AnalysisPage />} />
+            <Route path="/analysis/:gameId" element={<AnalysisPage />} />
             <Route path="/ranking" element={<RankingPage />} />
             <Route
               path="/profile/:username"

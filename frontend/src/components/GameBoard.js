@@ -29,10 +29,11 @@ const GameBoard = ({
   setBoard,
   animationRunning,
   setAnimationRunning,
+  currentAction,
+  setCurrentAction
 }) => {
   const [quadrantRotations, setQuadrantRotations] = useState([0, 0, 0, 0]);
   const [marbleRotations, setMarbleRotations] = useState([0, 0, 0, 0]);
-  const [currentAction, setCurrentAction] = useState({ type: null, placement: null, rotation: null });
   const [moveQueue, setMoveQueue] = useState([]);
 
   useEffect(() => {
@@ -117,6 +118,7 @@ const GameBoard = ({
     setBoard(newBoard);
   };
 
+  // maybe just remove these two functions from this file and use the ones from boardUtils instead
   const placeMarble = (placement) => {
     const player = getCurrentPlayer(board);
     const newBoard = board.map((r, rowIndex) =>
