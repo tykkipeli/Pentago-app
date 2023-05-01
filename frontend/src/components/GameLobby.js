@@ -17,7 +17,7 @@ const GameLobby = () => {
     setSelectedUser(username);
   };
 
-  
+
   useEffect(() => {
     const token = sessionStorage.getItem('token');
     if (!token) {
@@ -49,6 +49,10 @@ const GameLobby = () => {
     });
 
     newSocket.on("users", (initialUsers) => {
+      for (let i = 0; i < 100; i++) {
+        let newString = `User ${i}`;
+        initialUsers.push(newString);
+      }
       setUsers(initialUsers);
     });
 
@@ -104,99 +108,74 @@ const GameLobby = () => {
   }, []);
 
   return (
-    <div>
-      <h2>Game Lobby</h2>
-      <div className="lobby-container">
-        <div>
-          <ul className="user-list">
-            {users.map((username, index) => (
-              <li
-                key={index}
-                onClick={() => handleUserClick(username)}
-                className={selectedUser === username ? 'selected' : ''}
-              >
-                {username}
-              </li>
-            ))}
-          </ul>
-          <div className="button-container">
-            {selectedUser && !isChallenging && (
-              <button
-                onClick={() => {
-                  socket.emit('challenge', selectedUser);
-                  setIsChallenging(true);
-                }}
-              >
-                Challenge {selectedUser}
-              </button>
-            )}
-            {isChallenging && (
-              <button onClick={() => {
-                socket.emit("cancel_challenge");
-                setIsChallenging(false);
-              }}>Cancel challenge</button>
-            )}
+    <div className="lobby-container">
+      <div className="chat-container">
+        <ChatBox socket={socket} room="lobby" />
+      </div>
+      <div class="middle-container">
+        <div class="middle-content">
+          <div className="button-container-wrapper">
+            <div className="button-container">
+              {selectedUser && !isChallenging && (
+                <button
+                  onClick={() => {
+                    socket.emit("challenge", selectedUser);
+                    setIsChallenging(true);
+                  }}
+                >
+                  Challenge {selectedUser}
+                </button>
+              )}
+              {isChallenging && (
+                <button
+                  onClick={() => {
+                    socket.emit("cancel_challenge");
+                    setIsChallenging(false);
+                  }}
+                >
+                  Cancel challenge
+                </button>
+              )}
+              {incomingChallenge && (
+                <>
+                  <div className="incoming-challenge-message">
+                    {incomingChallenge} has challenged you!
+                  </div>
+                  <button onClick={() => socket.emit("accept_challenge")}>
+                    Accept
+                  </button>
+                  <button
+                    onClick={() => {
+                      socket.emit("reject_challenge");
+                      setIncomingChallenge(null);
+                    }}
+                  >
+                    Reject
+                  </button>
+                </>
+              )}
+            </div>
           </div>
-          {incomingChallenge && (
-            <>
-              <div>{incomingChallenge} has challenged you!</div>
-              <button onClick={() => socket.emit("accept_challenge")}>Accept</button>
-              <button onClick={() => {
-                socket.emit("reject_challenge");
-                setIncomingChallenge(null);
-              }}>Reject</button>
-            </>
-          )}
+          <div className="user-list-wrapper">
+            <ul className="user-list">
+              {users.map((username, index) => (
+                <li
+                  key={index}
+                  onClick={() => handleUserClick(username)}
+                  className={selectedUser === username ? "selected" : ""}
+                >
+                  {username}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
-        {socket && <div className="chat-container"><ChatBox socket={socket} room="lobby" /></div>}
+      </div>
+      <div className="right-container">
+        <p>Placeholder text for other stuff</p>
       </div>
     </div>
   );
-  /*
-  return (
-    <div>
-      <h2>Game Lobby</h2>
-      <ul>
-        {users.map((username, index) => (
-          <li
-            key={index}
-            onClick={() => handleUserClick(username)}
-            style={{ backgroundColor: selectedUser === username ? 'lightblue' : 'transparent' }}
-          >
-            {username}
-          </li>
-        ))}
-      </ul>
-      {selectedUser && !isChallenging && (
-        <button
-          onClick={() => {
-            socket.emit('challenge', selectedUser);
-            setIsChallenging(true);
-          }}
-        >
-          Challenge {selectedUser}
-        </button>
-      )}
-      {isChallenging && (
-        <button onClick={() => {
-          socket.emit("cancel_challenge");
-          setIsChallenging(false);
-        }}>Cancel challenge</button>
-      )}
-      {incomingChallenge && (
-        <>
-          <div>{incomingChallenge} has challenged you!</div>
-          <button onClick={() => socket.emit("accept_challenge")}>Accept</button>
-          <button onClick={() => {
-            socket.emit("reject_challenge");
-            setIncomingChallenge(null);
-          }}>Reject</button>
-        </>
-      )}
-      {socket && <ChatBox socket={socket} room="lobby" />}
-    </div>
-  );
-  */
 };
 
 export default GameLobby;

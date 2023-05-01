@@ -10,6 +10,7 @@ import { useParams } from 'react-router-dom';
 import './AnalysisPage.css';
 
 const AnalysisPage = () => {
+  console.log("AnalysisPage is being renderedd");
   const [animationRunning, setAnimationRunning] = useState(false);
   const [board, setBoard] = useState(Array(6).fill(Array(6).fill(null)));
   const [currentPlayer, setCurrentPlayer] = useState(1);

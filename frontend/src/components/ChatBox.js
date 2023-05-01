@@ -45,7 +45,7 @@ const ChatBox = ({ socket, room }) => {
   };
 
   return (
-    <div>
+    <div className="chat-wrapper">
       <h3>Chat</h3>
       <div className="chat-area" ref={chatAreaRef}>
         {messages.map((message, index) => (

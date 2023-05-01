@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import io from 'socket.io-client';
 import Game from './Game';
 import ChatBox from './ChatBox';
+import './GamePage.css';
 
 const GamePage = () => {
   const location = useLocation();
@@ -24,9 +25,14 @@ const GamePage = () => {
 
   return (
     <div>
-      <h2>Game Page</h2>
-      {socket && <Game socket={socket} player1={player1} player2={player2} gameID={gameID} />}
-      {socket && <ChatBox socket={socket} room={gameID} />}
+      <div className="gamepage-container">
+        <div className="chat-container">
+          {socket && <ChatBox socket={socket} room={gameID} />}
+        </div>
+        <div className="game-container">
+          {socket && <Game socket={socket} player1={player1} player2={player2} gameID={gameID} />}
+        </div>
+      </div>
     </div>
   );
 };

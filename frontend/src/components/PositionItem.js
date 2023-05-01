@@ -21,35 +21,47 @@ const PositionItem = ({ position, onClick }) => {
     ? `(${position.move.placement.row + 1},${position.move.placement.col + 1}) ${quadrantText(position.move.rotation.quadrant)} ${position.move.rotation.direction}`
     : "";
 
-  const totalWins = position.white_wins + position.black_wins;
-  const whiteWinsPercentage = (position.white_wins / totalWins) * 100;
-  const blackWinsPercentage = (position.black_wins / totalWins) * 100;
+  const totalGames = position.times_reached;
+  const totalDraws = totalGames - position.white_wins - position.black_wins;
+  const whiteWinsPercentage = (position.white_wins / totalGames) * 100;
+  const drawPercentage = (totalDraws / totalGames) * 100;
+  const blackWinsPercentage = (position.black_wins / totalGames) * 100;
 
   return (
     <div className="position-item" onClick={() => onClick(position)}>
       <div className="position-details">
         <div>Move: {moveText}</div>
-        <div>Times reached: {position.times_reached}</div>
         <div className="win-bar-container">
-          <div
-            className="win-bar"
-            style={{
-              width: `${whiteWinsPercentage}%`,
-              backgroundColor: 'white',
-            }}
-          ></div>
-          <div
-            className="win-bar"
-            style={{
-              width: `${blackWinsPercentage}%`,
-              backgroundColor: 'black',
-              left: `${whiteWinsPercentage}%`,
-            }}
-          ></div>
+          <span>{position.times_reached}</span>
+          <div className="win-bars">
+            <div
+              className="win-bar"
+              style={{
+                width: `${whiteWinsPercentage}%`,
+                backgroundColor: 'white',
+              }}
+            ></div>
+            <div
+              className="win-bar"
+              style={{
+                width: `${drawPercentage}%`,
+                backgroundColor: 'grey',
+                left: `${whiteWinsPercentage}%`,
+              }}
+            ></div>
+            <div
+              className="win-bar"
+              style={{
+                width: `${blackWinsPercentage}%`,
+                backgroundColor: 'black',
+                left: `${whiteWinsPercentage + drawPercentage}%`,
+              }}
+            ></div>
+          </div>
         </div>
       </div>
     </div>
   );
 };
-    
+
 export default PositionItem;

@@ -3,8 +3,8 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 10px;
-    margin: 5px;
+    padding: 3px;
+    margin: 1px;
     background-color: hsl(227, 39%, 57%);
     border-radius: 5px;
     cursor: pointer;
@@ -18,24 +18,32 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 90%
 }
 
 .position-details>div {
     margin-bottom: 3px;
 }
 
-
 .win-bar-container {
     width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .win-bars {
+    width: 80%; /* Set a fixed width for the win-bars */
     height: 10px;
     background-color: #ccc;
     border-radius: 3px;
     overflow: hidden;
     position: relative;
-}
-
-.win-bar {
+  }
+  
+  .win-bar {
     position: absolute;
     height: 100%;
-    border-radius: 3px;
-}
+    border-radius: 1px;
+  }
+

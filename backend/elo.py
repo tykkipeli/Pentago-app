@@ -46,10 +46,10 @@ def player1_wins(rating1, rating2):
 
 def example():
     # Example usage
-    rating1 = 1500
-    rating2 = 1500
-    games_played1 = 0
-    games_played2 = 0
+    rating1 = 1800
+    rating2 = 1400
+    games_played1 = 200
+    games_played2 = 100
     outcome = 1  # Player 1 wins (1), Player 2 wins (0)
 
     for i in range(1):
@@ -59,11 +59,11 @@ def example():
         print("Player 1 new rating:", rating1)
         print("Player 2 new rating:", rating2)
 
-#example()
+example()
 
 def k_factor_test():
     for i in range(200):
-        print(get_dynamic_k_factor(i+1))
+        print(i, get_dynamic_k_factor(i+1))
 
 def test():
     true_ratings = [0, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000]
@@ -90,6 +90,8 @@ def test():
     print(games_played)
     for i in range(1, 12):
         print(f"Player {i}: {current_ratings[i]}")
+
+#print(k_factor_test())
 
 
 

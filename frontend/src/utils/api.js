@@ -43,8 +43,12 @@ const loadGameData = async (gameId, initialNode) => {
   const fetchNextPositions = async (newBoard) => {
     const { whiteBitboard, blackBitboard } = boardToBitboards(newBoard);
     try {
+      const t0 = performance.now();
       const response = await fetch(`/api/positions/${whiteBitboard}/${blackBitboard}`);
       const data = await response.json();
+      const t1 = performance.now();
+      const elapsed = t1 - t0;
+      console.log("aika siirtojen hakemiseen, " + elapsed);
       if (response.ok) {
         const boardKey = boardToString(newBoard);
 
@@ -57,6 +61,9 @@ const loadGameData = async (gameId, initialNode) => {
             move: allMovesMap.get(key),
           };
         });
+        const t2 = performance.now();
+        const elapsed = t2 - t1;
+        console.log("aika siirtojen laskemiseen, " + elapsed);
         return nextPositionsMoves;
       } else {
         console.log('Error:', data.error);

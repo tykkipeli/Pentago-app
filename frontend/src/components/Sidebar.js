@@ -35,11 +35,21 @@ const Sidebar = ({ isLoggedIn, username, onLogout }) => {
         </ul>
       </nav>
       <nav className="auth-links">
+
         {isLoggedIn ? (
-          <>
-            <p>Logged in as: {username}</p>
-            <button onClick={onLogout}>Logout</button>
-          </>
+          <div className="user-dropdown">
+            <div className="username-wrapper">
+              <NavLink to={`/profile/${username}`}>{username}</NavLink>
+            </div>
+            <div className="dropdown-wrapper">
+              <div className="dropdown-content">
+                <NavLink to="/some-page-1">Some Page 1</NavLink>
+                <NavLink to="/some-page-2">Some Page 2</NavLink>
+                <NavLink to="/some-page-3">Some Page 3</NavLink>
+                <NavLink onClick={onLogout} to="/">Logout</NavLink>
+              </div>
+            </div>
+          </div>
         ) : (
           <ul>
             <li>

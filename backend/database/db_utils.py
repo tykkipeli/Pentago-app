@@ -136,7 +136,8 @@ GROUP BY white_bb, black_bb
 ORDER BY times_reached DESC;
 
     """)
-
+    import time
+    start_time = time.time()
     result = db.session.execute(
         query, {"white_bitboard": white_bitboard, "black_bitboard": black_bitboard})
     next_positions_info = [
@@ -148,5 +149,8 @@ ORDER BY times_reached DESC;
             'black_wins': row[4],
         } for row in result
     ]
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    print(elapsed_time)
     return next_positions_info
 

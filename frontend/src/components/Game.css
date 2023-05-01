@@ -1,0 +1,89 @@
+/*
+.game-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.game-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.player-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.player-info p {
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin: 0;
+}
+
+.game-status {
+  font-weight: bold;
+  margin-left: 16px;
+}
+*/
+
+.game-wrapper {
+    display: flex;
+    height: 100%;
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .leftside-wrapper {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .game-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+  
+  .player-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .player-info p {
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin: 0;
+  }
+  
+  .game-status {
+    font-weight: bold;
+    margin-left: 16px;
+  }
+  
+  .time-container {
+    display: flex;
+    height: 100%;
+    width: 20%;
+    align-items: center;
+    flex-direction: row;
+    gap: 4px;
+    margin-left: 16px;
+  }
+  
+  .time-container p {
+    background-color: #000000;
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin: 0;
+  }
+  

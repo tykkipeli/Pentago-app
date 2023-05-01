@@ -43,7 +43,6 @@ function App() {
     sessionStorage.removeItem('username');
   };
 
-
   return (
     <Router>
       <div className="app">
@@ -56,14 +55,13 @@ function App() {
               element={isLoggedIn ? <GameLobby /> : <Navigate to="/login" />}
             />
             <Route path="/game" element={<GamePage />} />
-            <Route path="/analysis" element={<AnalysisPage />} />
-            <Route path="/analysis/:gameId" element={<AnalysisPage />} />
+            <Route path="/analysis/:gameId?" element={<AnalysisPage />} />
             <Route path="/ranking" element={<RankingPage />} />
             <Route
               path="/profile/:username"
               element={isLoggedIn ? <ProfilePage /> : <Navigate to="/login" />}
             />
-            <Route path="/testi" element={<GameBoard />} />
+            <Route path="/testi" element={<About />} />
             <Route
               path="/login"
               element={<LoginPage onLogin={handleLogin} />}

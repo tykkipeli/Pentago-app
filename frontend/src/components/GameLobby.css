@@ -1,34 +1,108 @@
 .lobby-container {
     display: flex;
     justify-content: space-between;
+    height: 87vh;
+}
+
+/* Left */
+.chat-container {
+    width: 25%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-radius: 10px;
+    /* Add rounded corners to the chatbox */
+    padding: 15px;
+}
+
+/* Middle */
+.middle-container {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: hidden;
+    /* Hide the horizontal scrollbar */
+}
+
+.middle-content {
+    width: 100%; /* Ensure middle-content takes the full width of middle-container */
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.middle-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow-y: hidden;
+}
+
+.user-list-wrapper {
+    overflow-y: auto;
+    padding-bottom: 10%;
 }
 
 .user-list {
     list-style-type: none;
     padding: 0;
-    width: 250px;
+    height: 100%;
+    overflow-y: auto;
+    max-width: 40%;
+    /* Limit the width of the user list items */
+    min-width: 200px;
+    /* Set a minimum width for the user list items */
+    margin: 0 auto;
+    /* Center the user list items */
 }
 
 .user-list li {
-    background-color: #f1f1f1;
-    border: 1px solid #ddd;
+    background-color: #000000;
     cursor: pointer;
     margin-bottom: -1px;
     padding: 12px;
+    border-radius: 10px;
+    text-align: center;
 }
 
 .user-list li:hover {
-    background-color: #ddd;
+    background-color: #525252;
 }
 
 .user-list li.selected {
-    background-color: lightblue;
+    background-color: rgb(185, 10, 40);
+}
+
+.button-container-wrapper {
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex-shrink: 0;
+    align-items: center; /* Center the content horizontally */
 }
 
 .button-container {
-    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column; /* Change the direction to column */
+    justify-content: center;
+    align-items: center; /* Center the buttons */
+    gap: 10px; /* Add space between buttons */
 }
 
-.chat-container {
-    width: 60%;
+.incoming-challenge-message {
+    margin-bottom: 10px; /* Add some space between the message and buttons */
+    font-weight: bold; /* Make the text bold */
+}
+
+/* Right */
+.right-container {
+    width: 25%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    box-sizing: border-box;
 }
