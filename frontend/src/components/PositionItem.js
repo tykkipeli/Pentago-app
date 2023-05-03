@@ -1,7 +1,7 @@
 import React from 'react';
 import './PositionItem.css';
 
-const PositionItem = ({ position, onClick }) => {
+const PositionItem = ({ position, onClick, onMoveHover, onMoveLeave }) => {
   const quadrantText = (quadrant) => {
     switch (quadrant) {
       case 0:
@@ -28,7 +28,12 @@ const PositionItem = ({ position, onClick }) => {
   const blackWinsPercentage = (position.black_wins / totalGames) * 100;
 
   return (
-    <div className="position-item" onClick={() => onClick(position)}>
+    <div
+      className="position-item"
+      onClick={() => onClick(position)}
+      onMouseEnter={() => onMoveHover(position.move)}
+      onMouseLeave={onMoveLeave}
+    >
       <div className="position-details">
         <div>Move: {moveText}</div>
         <div className="win-bar-container">

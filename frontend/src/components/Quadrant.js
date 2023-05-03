@@ -26,14 +26,38 @@ const calculateShift = (angle, sideLength, quadrant) => {
 
 
 
-const Quadrant = ({ backgroundImage, boardData, quadrant, onClick, onArrowClick, rotation, quadrantRotation, }) => {
+const Quadrant = ({
+  backgroundImage,
+  boardData,
+  quadrant,
+  onClick,
+  onArrowClick,
+  rotation,
+  quadrantRotation,
+  hoveredMarble,
+  hoveredRotation,
+  setHoveredMarble,
+  setHoveredRotation,
+  currentAction
+}) => {
+  const startRow = quadrant < 3 ? 0 : 3;
+  const startCol = quadrant % 2 === 1 ? 0 : 3;
+
   const renderCell = (row, col) => (
     <Cell
       key={`${row}-${col}`}
       value={boardData[row][col]}
       onClick={() => onClick(row, col)}
+      onMouseEnter={() => {
+        if (currentAction.placement === null && currentAction.rotation === null && boardData[row][col] === null) {
+          setHoveredMarble({ row: startRow + row, col: startCol + col });
+        }
+      }}
+      onMouseLeave={() => setHoveredMarble(null)}
+      hovered={hoveredMarble && hoveredMarble.row === startRow + row && hoveredMarble.col === startCol + col}
     />
   );
+
   // Calculate the shift based on the current rotation angle.
   const sideLength = 3 * CELL_SIZE;
   const angle = (rotation % 360 + 360) % 360;
@@ -41,7 +65,17 @@ const Quadrant = ({ backgroundImage, boardData, quadrant, onClick, onArrowClick,
 
   return (
     <div>
-      <Arrows quadrant={quadrant} onArrowClick={onArrowClick} />
+      <Arrows
+        quadrant={quadrant}
+        onArrowClick={onArrowClick}
+        onMouseEnter={(rotation) => {
+          if (currentAction.placement !== null && currentAction.rotation === null) {
+            setHoveredRotation(rotation);
+          }
+        }}
+        onMouseLeave={() => setHoveredRotation(null)}
+        hoveredRotation={hoveredRotation}
+      />
       <div
         className="quadrant"
         style={{

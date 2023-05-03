@@ -1,23 +1,40 @@
 import React from 'react';
 import './Arrows.css';
 
-
-const Arrows = ({ quadrant, onArrowClick }) => {
-    const handleClick = (e, direction) => {
-      e.preventDefault();
-      onArrowClick(quadrant - 1, direction);
-    };
-  
-    return (
-      <div className={`arrows arrows-quadrant-${quadrant}`} style={{width: '100%', height: '100%'}}>
-        <span className="arrow arrow-ccw" onClick={(e) => handleClick(e, 'ccw')}>
-          ↺
-        </span>
-        <span className="arrow arrow-cw" onClick={(e) => handleClick(e, 'cw')}>
-          ↻
-        </span>
-      </div>
-    );
+const Arrows = ({ quadrant, onArrowClick, onMouseEnter, onMouseLeave, hoveredRotation }) => {
+  const handleClick = (e, direction) => {
+    e.preventDefault();
+    onArrowClick(quadrant - 1, direction);
   };
-  
-  export default Arrows;
+
+  const arrowClass = (direction) =>
+    `arrow arrow-${direction} ${hoveredRotation && 
+      hoveredRotation.quadrant === quadrant - 1 && 
+      hoveredRotation.direction === direction
+      ? 'hovered'
+      : ''
+    }`;
+
+  return (
+    <div className={`arrows arrows-quadrant-${quadrant}`} style={{ width: '100%', height: '100%' }}>
+      <span
+        className={arrowClass('ccw')}
+        onClick={(e) => handleClick(e, 'ccw')}
+        onMouseEnter={() => onMouseEnter({quadrant:quadrant-1, direction:'ccw'})}
+        onMouseLeave={onMouseLeave}
+      >
+        ↺
+      </span>
+      <span
+        className={arrowClass('cw')}
+        onClick={(e) => handleClick(e, 'cw')}
+        onMouseEnter={() => onMouseEnter({quadrant:(quadrant-1), direction:'cw'})}
+        onMouseLeave={onMouseLeave}
+      >
+        ↻
+      </span>
+    </div>
+  );
+};
+
+export default Arrows;

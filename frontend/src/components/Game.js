@@ -17,6 +17,8 @@ const Game = ({ player1, player2, gameID, socket }) => {
   const [animationRunning, setAnimationRunning] = useState(false);
   const [player1Rating, setPlayer1Rating] = useState(0);
   const [player2Rating, setPlayer2Rating] = useState(0);
+  const [hoveredMarble, setHoveredMarble] = useState(null)
+  const [hoveredRotation, setHoveredRotation] = useState(null)
 
   const updatePlayerTimes = (player, newTime) => {
     setPlayerTimes((prevTimes) => {
@@ -120,38 +122,6 @@ const Game = ({ player1, player2, gameID, socket }) => {
 
   const isLocalPlayerTurn = currentPlayer === localPlayer;
   return (
-    /*
-    <div className="game-wrapper">
-      <div className="game-info">
-        <h3>Game: {gameID}</h3>
-        <div className="player-info">
-          <p>
-            Player 1: {player1} | Rating: {player1Rating} | Time: {Math.floor(playerTimes[1] / 60)}:
-            {String(Math.floor(playerTimes[1] % 60)).padStart(2, "0")}:
-            {String(Math.floor((playerTimes[1] % 1) * 10 ** decimalPlaces)).padStart(decimalPlaces, "0")}
-          </p>
-          <p>
-            Player 2: {player2} | Rating: {player2Rating} | Time: {Math.floor(playerTimes[2] / 60)}:
-            {String(Math.floor(playerTimes[2] % 60)).padStart(2, "0")}:
-            {String(Math.floor((playerTimes[2] % 1) * 10 ** decimalPlaces)).padStart(decimalPlaces, "0")}
-          </p>
-        </div>
-        {!gameResult && <p className="game-status">{isLocalPlayerTurn ? "Your Turn" : "Opponent's Turn"}</p>}
-        {gameResult && <p className="game-status">{gameResult}</p>}
-      </div>
-      <GameBoard
-        onMove={handleMove}
-        opponentMove={opponentMove}
-        isLocalPlayerTurn={isLocalPlayerTurn}
-        board={board}
-        setBoard={setBoard}
-        animationRunning={animationRunning}
-        setAnimationRunning={setAnimationRunning}
-        currentAction={currentAction}
-        setCurrentAction={setCurrentAction}
-      />
-    </div>
-    */
     <div className="game-wrapper">
       <div className="leftside-wrapper">
         <div className="game-info">
@@ -173,6 +143,10 @@ const Game = ({ player1, player2, gameID, socket }) => {
           setAnimationRunning={setAnimationRunning}
           currentAction={currentAction}
           setCurrentAction={setCurrentAction}
+          hoveredMarble={hoveredMarble}
+          hoveredRotation={hoveredRotation}
+          setHoveredMarble={setHoveredMarble}
+          setHoveredRotation={setHoveredRotation}
         />
       </div>
       <div className="time-container">

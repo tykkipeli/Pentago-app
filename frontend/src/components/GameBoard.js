@@ -30,7 +30,11 @@ const GameBoard = ({
   animationRunning,
   setAnimationRunning,
   currentAction,
-  setCurrentAction
+  setCurrentAction,
+  hoveredMarble = null,
+  hoveredRotation = null,
+  setHoveredMarble,
+  setHoveredRotation
 }) => {
   const [quadrantRotations, setQuadrantRotations] = useState([0, 0, 0, 0]);
   const [marbleRotations, setMarbleRotations] = useState([0, 0, 0, 0]);
@@ -94,6 +98,7 @@ const GameBoard = ({
       return;
     }
     const placement = { row: globalRow, col: globalCol };
+    setHoveredMarble(null);
     setCurrentAction({ ...currentAction, type: "move", placement });
     placeMarble(placement);
   };
@@ -103,6 +108,7 @@ const GameBoard = ({
       return;
     }
     const rotation = { quadrant, direction };
+    setHoveredRotation(null);
     setCurrentAction({ ...currentAction, rotation });
     const fullMove = { ...currentAction, rotation };
     onMove(fullMove);
@@ -187,6 +193,11 @@ const GameBoard = ({
         onArrowClick={handleArrowClick}
         rotation={marbleRotations[quadrantIndex]}
         quadrantRotation={quadrantRotations[quadrantIndex]}
+        hoveredMarble={hoveredMarble}
+        hoveredRotation={hoveredRotation}
+        setHoveredMarble={setHoveredMarble}
+        setHoveredRotation={setHoveredRotation}
+        currentAction={currentAction}
       />
     </div>
   );

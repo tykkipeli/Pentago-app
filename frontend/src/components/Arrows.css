@@ -9,52 +9,60 @@
     margin: 4px;
   }
   
-  .arrows-quadrant-1 .arrow-ccw {
+  .arrows-quadrant-1 .arrow-cw {
     position: absolute;
-    top: calc(-1 * var(--cell-size) / 2);
+    top: calc(-1.2 * var(--cell-size) / 2);
     left: calc(50% - var(--cell-size) / 4);
+    transform: rotate(135deg);
   }
   
-  .arrows-quadrant-1 .arrow-cw {
+  .arrows-quadrant-1 .arrow-ccw {
     position: absolute;
     left: calc(-1 * var(--cell-size) / 2);
     top: calc(50% - var(--cell-size) / 4);
+    transform: rotate(135deg);
   }
   
   .arrows-quadrant-2 .arrow-ccw {
     position: absolute;
-    top: calc(-1 * var(--cell-size) / 2);
+    top: calc(-1.2 * var(--cell-size) / 2);
     right: calc(50% - var(--cell-size) / 4);
+    transform: rotate(-135deg);
   }
   
   .arrows-quadrant-2 .arrow-cw {
     position: absolute;
     right: calc(-1 * var(--cell-size) / 2);
     top: calc(50% - var(--cell-size) / 4);
+    transform: rotate(-135deg);
   }
   
   .arrows-quadrant-3 .arrow-ccw {
     position: absolute;
-    bottom: calc(-1 * var(--cell-size) / 2);
+    bottom: calc(-1.2 * var(--cell-size) / 2);
     left: calc(50% - var(--cell-size) / 4);
+    transform: rotate(45deg);
   }
   
   .arrows-quadrant-3 .arrow-cw {
     position: absolute;
     left: calc(-1 * var(--cell-size) / 2);
     bottom: calc(50% - var(--cell-size) / 4);
-  }
-  
-  .arrows-quadrant-4 .arrow-ccw {
-    position: absolute;
-    bottom: calc(-1 * var(--cell-size) / 2);
-    right: calc(50% - var(--cell-size) / 4);
+    transform: rotate(45deg);
   }
   
   .arrows-quadrant-4 .arrow-cw {
     position: absolute;
+    bottom: calc(-1.2 * var(--cell-size) / 2);
+    right: calc(50% - var(--cell-size) / 4);
+    transform: rotate(-45deg);
+  }
+  
+  .arrows-quadrant-4 .arrow-ccw {
+    position: absolute;
     right: calc(-1 * var(--cell-size) / 2);
     bottom: calc(50% - var(--cell-size) / 4);
+    transform: rotate(-45deg);
   }
   
   .arrow-ccw {
@@ -67,3 +75,8 @@
     transform: rotate(45deg);
   }
   
+  .arrow.hovered {
+    color: red;
+    font-size: calc(var(--cell-size) / 1.8);
+    background-color: transparent;
+  }

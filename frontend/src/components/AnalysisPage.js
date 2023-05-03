@@ -21,6 +21,8 @@ const AnalysisPage = () => {
   const [nextPositions, setNextPositions] = useState([]);
   const [currentAction, setCurrentAction] = useState({ type: null, placement: null, rotation: null });
   const [considerSymmetrical, setConsiderSymmetrical] = useState(false);
+  const [hoveredMarble, setHoveredMarble] = useState(null)
+  const [hoveredRotation, setHoveredRotation] = useState(null)
   const { gameId } = useParams();
 
   //TODO: Make sure to handle the situation where current action is incomplete
@@ -34,6 +36,8 @@ const AnalysisPage = () => {
   }, [considerSymmetrical]);
 
   const fetchNextPositionsFromServer = async (newBoard) => {
+    setHoveredMarble(null);
+    setHoveredRotation(null);
     const nextPositionsMoves = await fetchNextPositions(newBoard, considerSymmetrical);
     setNextPositions(nextPositionsMoves);
   };
@@ -181,6 +185,10 @@ const AnalysisPage = () => {
           setAnimationRunning={setAnimationRunning}
           currentAction={currentAction}
           setCurrentAction={setCurrentAction}
+          hoveredMarble={hoveredMarble}
+          hoveredRotation={hoveredRotation}
+          setHoveredMarble={setHoveredMarble}
+          setHoveredRotation={setHoveredRotation}
         />
         <div className="arrow-buttons">
           <button className="arrow-button" onClick={handlePreviousMove}>
@@ -196,6 +204,17 @@ const AnalysisPage = () => {
           <PositionItem
             key={index}
             position={position}
+            onMoveHover={(move) => {
+              console.log(move.rotation);
+              console.log(move.placement)
+              setHoveredMarble(move.placement);
+              setHoveredRotation(move.rotation);
+            }}
+            onMoveLeave={() => {
+              console.log("mau");
+              setHoveredMarble(null);
+              setHoveredRotation(null);
+            }}
             onClick={(clickedPosition) => {
               console.log('Clicked position:', clickedPosition);
               handleListMove(clickedPosition.move);
