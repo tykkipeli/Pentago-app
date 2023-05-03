@@ -1,5 +1,6 @@
 from app import db
 from .models import Users, Games, Positions
+from utils import generate_symmetrical_positions, generate_reachable_positions, group_next_positions_info, print_bitboard
 from sqlalchemy.sql.expression import or_, and_
 from sqlalchemy import text
 from flask import url_for
@@ -116,13 +117,19 @@ def game_result(game):
         return '0-1'
 
 
-def get_position_info(white_bitboard, black_bitboard):
-    query = text("""
+def get_position_info(white_bitboard, black_bitboard, consider_symmetrical):
+    symmetrical_positions = generate_symmetrical_positions(
+        white_bitboard, black_bitboard) if consider_symmetrical else [(white_bitboard, black_bitboard)]
+
+    symmetrical_positions_placeholders = ', '.join(
+        [f'(:white_bb{i}, :black_bb{i})' for i in range(len(symmetrical_positions))])
+
+    query = text(f"""
         WITH next_positions AS (
   SELECT p1.white_bitboard AS white_bb, p1.black_bitboard AS black_bb, p1.game_id AS game_id
   FROM positions p1
   JOIN positions p2 ON p1.prev_position = p2.id
-  WHERE p2.white_bitboard = :white_bitboard AND p2.black_bitboard = :black_bitboard
+  WHERE (p2.white_bitboard, p2.black_bitboard) IN ({symmetrical_positions_placeholders})
 )
 SELECT 
   white_bb, 
@@ -134,12 +141,16 @@ FROM next_positions
 JOIN games g ON g.id = next_positions.game_id
 GROUP BY white_bb, black_bb
 ORDER BY times_reached DESC;
-
     """)
-    import time
-    start_time = time.time()
-    result = db.session.execute(
-        query, {"white_bitboard": white_bitboard, "black_bitboard": black_bitboard})
+
+    bind_params = {}
+    for i, pos in enumerate(symmetrical_positions):
+        bind_params[f'white_bb{i}'] = pos[0]
+        bind_params[f'black_bb{i}'] = pos[1]
+        print(pos[0], pos[1])
+
+    result = db.session.execute(query, bind_params)
+
     next_positions_info = [
         {
             'white_bb': row[0],
@@ -149,8 +160,14 @@ ORDER BY times_reached DESC;
             'black_wins': row[4],
         } for row in result
     ]
-    end_time = time.time()
-    elapsed_time = end_time - start_time
-    print(elapsed_time)
-    return next_positions_info
+    if consider_symmetrical:
+        next_positions_info = group_next_positions_info(next_positions_info, white_bitboard, black_bitboard)
+
+    sorted_next_positions_info = sorted(
+        next_positions_info, 
+        key=lambda x: x['times_reached'], 
+        reverse=True
+    )
+    return sorted_next_positions_info
+
 

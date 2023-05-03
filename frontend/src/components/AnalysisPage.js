@@ -20,12 +20,29 @@ const AnalysisPage = () => {
   const [visitedNodes, setVisitedNodes] = useState(new Map());
   const [nextPositions, setNextPositions] = useState([]);
   const [currentAction, setCurrentAction] = useState({ type: null, placement: null, rotation: null });
+  const [considerSymmetrical, setConsiderSymmetrical] = useState(false);
   const { gameId } = useParams();
 
+  //TODO: Make sure to handle the situation where current action is incomplete
+  const handleConsiderSymmetricalChange = (event) => {
+    setConsiderSymmetrical(event.target.checked);
+  };
+
+  useEffect(() => {
+    console.log("heree");
+    fetchNextPositionsFromServer(board);
+  }, [considerSymmetrical]);
+
+  const fetchNextPositionsFromServer = async (newBoard) => {
+    const nextPositionsMoves = await fetchNextPositions(newBoard, considerSymmetrical);
+    setNextPositions(nextPositionsMoves);
+  };
+  /*
   const fetchNextPositionsFromServer = async (newBoard) => {
     const nextPositionsMoves = await fetchNextPositions(newBoard);
     setNextPositions(nextPositionsMoves);
   };
+  */
 
   const initialBoardKey = boardToString(board);
   const initialNode = new Node(null);
@@ -36,7 +53,7 @@ const AnalysisPage = () => {
       newVisitedNodes.set(initialBoardKey, initialNode);
       return newVisitedNodes;
     });
-    fetchNextPositionsFromServer(board);
+    //fetchNextPositionsFromServer(board);
   }, []);
 
   useEffect(() => {
@@ -49,7 +66,7 @@ const AnalysisPage = () => {
         }
       });
     }
-  }, [gameId]);  
+  }, [gameId]);
 
 
   useEffect(() => {
@@ -185,6 +202,17 @@ const AnalysisPage = () => {
             }}
           />
         ))}
+      </div>
+      <div className="consider-symmetrical">
+        <label htmlFor="considerSymmetrical">
+          <input
+            type="checkbox"
+            id="considerSymmetrical"
+            checked={considerSymmetrical}
+            onChange={handleConsiderSymmetricalChange}
+          />
+          Consider symmetrical positions equal
+        </label>
       </div>
     </div>
   );
