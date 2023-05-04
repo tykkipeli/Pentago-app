@@ -116,13 +116,37 @@ def game_result(game):
     else:
         return '0-1'
 
-
-def get_position_info(white_bitboard, black_bitboard, consider_symmetrical):
-    symmetrical_positions = generate_symmetrical_positions(
-        white_bitboard, black_bitboard) if consider_symmetrical else [(white_bitboard, black_bitboard)]
-
+def generate_sql_query(symmetrical_positions, filters):
     symmetrical_positions_placeholders = ', '.join(
         [f'(:white_bb{i}, :black_bb{i})' for i in range(len(symmetrical_positions))])
+
+    filter_conditions = []
+    bind_params = {}
+    if filters['usernameWhite']:
+        filter_conditions.append("LOWER(u_white.username) = LOWER(:usernameWhite)")
+        bind_params['usernameWhite'] = filters['usernameWhite']
+    if filters['usernameBlack']:
+        filter_conditions.append("LOWER(u_black.username) = LOWER(:usernameBlack)")
+        bind_params['usernameBlack'] = filters['usernameBlack']
+    if filters['whiteRatingMin']:
+        filter_conditions.append("u_white.rating >= :whiteRatingMin")
+        bind_params['whiteRatingMin'] = filters['whiteRatingMin']
+    if filters['whiteRatingMax']:
+        filter_conditions.append("u_white.rating <= :whiteRatingMax")
+        bind_params['whiteRatingMax'] = filters['whiteRatingMax']
+    if filters['blackRatingMin']:
+        filter_conditions.append("u_black.rating >= :blackRatingMin")
+        bind_params['blackRatingMin'] = filters['blackRatingMin']
+    if filters['blackRatingMax']:
+        filter_conditions.append("u_black.rating <= :blackRatingMax")
+        bind_params['blackRatingMax'] = filters['blackRatingMax']
+    if filters['daysAgo']:
+        filter_conditions.append("g.date >= NOW() - INTERVAL '1' DAY * :daysAgo")
+        bind_params['daysAgo'] = filters['daysAgo']
+
+    filter_conditions_str = ' AND '.join(filter_conditions)
+    if filter_conditions_str:
+        filter_conditions_str = f'AND {filter_conditions_str}'
 
     query = text(f"""
         WITH next_positions AS (
@@ -139,15 +163,23 @@ SELECT
   SUM(CASE WHEN g.winner_id = g.black_id THEN 1 ELSE 0 END) AS black_wins
 FROM next_positions
 JOIN games g ON g.id = next_positions.game_id
+JOIN users u_white ON g.white_id = u_white.id
+JOIN users u_black ON g.black_id = u_black.id
+WHERE 1=1 {filter_conditions_str}
 GROUP BY white_bb, black_bb
 ORDER BY times_reached DESC;
     """)
+    return query, bind_params
 
-    bind_params = {}
+def get_position_info(white_bitboard, black_bitboard, consider_symmetrical, filters):
+    symmetrical_positions = generate_symmetrical_positions(
+        white_bitboard, black_bitboard) if consider_symmetrical else [(white_bitboard, black_bitboard)]
+    query, filter_bind_params = generate_sql_query(symmetrical_positions, filters)
+
+    bind_params = {**filter_bind_params}
     for i, pos in enumerate(symmetrical_positions):
         bind_params[f'white_bb{i}'] = pos[0]
         bind_params[f'black_bb{i}'] = pos[1]
-        print(pos[0], pos[1])
 
     result = db.session.execute(query, bind_params)
 
@@ -169,5 +201,4 @@ ORDER BY times_reached DESC;
         reverse=True
     )
     return sorted_next_positions_info
-
 

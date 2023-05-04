@@ -71,13 +71,6 @@ def register():
 
 
 '''
-@app.route('/api/positions/<white_bitboard>/<black_bitboard>', methods=['GET'])
-def get_position_info_route(white_bitboard, black_bitboard):
-    next_positions_info = get_position_info(white_bitboard, black_bitboard)
-    response = {'next_positions': next_positions_info}
-    return jsonify(response), 200
-'''
-
 @app.route('/api/positions/<white_bitboard>/<black_bitboard>/<consider_symmetrical>', methods=['GET'])
 def get_position_info_route(white_bitboard, black_bitboard, consider_symmetrical):
     consider_symmetrical = consider_symmetrical.lower() == 'true'
@@ -86,7 +79,25 @@ def get_position_info_route(white_bitboard, black_bitboard, consider_symmetrical
         int(white_bitboard), int(black_bitboard), consider_symmetrical)
     response = {'next_positions': next_positions_info}
     return jsonify(response), 200
+'''
 
+@app.route('/api/positions/<white_bitboard>/<black_bitboard>/<consider_symmetrical>', methods=['GET'])
+def get_position_info_route(white_bitboard, black_bitboard, consider_symmetrical):
+    consider_symmetrical = consider_symmetrical.lower() == 'true'
+    print("consider_symmetrical:", consider_symmetrical)
+    filters = {
+        'usernameWhite': request.args.get('usernameWhite', ''),
+        'usernameBlack': request.args.get('usernameBlack', ''),
+        'whiteRatingMin': request.args.get('whiteRatingMin', ''),
+        'whiteRatingMax': request.args.get('whiteRatingMax', ''),
+        'blackRatingMin': request.args.get('blackRatingMin', ''),
+        'blackRatingMax': request.args.get('blackRatingMax', ''),
+        'daysAgo': request.args.get('daysAgo', ''),
+    }
+    next_positions_info = get_position_info(
+        int(white_bitboard), int(black_bitboard), consider_symmetrical, filters)
+    response = {'next_positions': next_positions_info}
+    return jsonify(response), 200
 
 @app.route('/api/rankings', methods=['GET'])
 def get_users_route():

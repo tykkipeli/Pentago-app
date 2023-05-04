@@ -1,7 +1,7 @@
 import React from 'react';
 import './PositionItem.css';
 
-const PositionItem = ({ position, onClick, onMoveHover, onMoveLeave }) => {
+const PositionItem = ({ position, onClick, onMoveHover, onMoveLeave, index }) => {
   const quadrantText = (quadrant) => {
     switch (quadrant) {
       case 0:
@@ -31,7 +31,7 @@ const PositionItem = ({ position, onClick, onMoveHover, onMoveLeave }) => {
     <div
       className="position-item"
       onClick={() => onClick(position)}
-      onMouseEnter={() => onMoveHover(position.move)}
+      onMouseEnter={() => onMoveHover(position.move, index)}
       onMouseLeave={onMoveLeave}
     >
       <div className="position-details">

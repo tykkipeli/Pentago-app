@@ -39,7 +39,7 @@ const loadGameData = async (gameId, initialNode) => {
     return null;
   }
 };
-
+/*
 const fetchNextPositions = async (newBoard, considerSymmetrical) => {
   const { whiteBitboard, blackBitboard } = boardToBitboards(newBoard);
   try {
@@ -72,13 +72,15 @@ const fetchNextPositions = async (newBoard, considerSymmetrical) => {
     console.error('Error fetching position information:', error);
   }
 };
-
-/*
-const fetchNextPositions = async (newBoard) => {
+*/
+const fetchNextPositions = async (newBoard, considerSymmetrical, filters) => {
   const { whiteBitboard, blackBitboard } = boardToBitboards(newBoard);
+  const queryParams = new URLSearchParams(filters).toString();
   try {
     const t0 = performance.now();
-    const response = await fetch(`/api/positions/${whiteBitboard}/${blackBitboard}`);
+    const response = await fetch(
+      `/api/positions/${whiteBitboard}/${blackBitboard}/${considerSymmetrical}?${queryParams}`
+    );
     const data = await response.json();
     const t1 = performance.now();
     const elapsed = t1 - t0;
@@ -106,7 +108,6 @@ const fetchNextPositions = async (newBoard) => {
     console.error('Error fetching position information:', error);
   }
 };
-*/
 
 export {
   loadGameData, fetchNextPositions

@@ -6,6 +6,7 @@ import { loadGameData, fetchNextPositions } from '../utils/api';
 import { rotateQuadrant, getMoveFromBoards, boardToString, boardCopy } from '../utils/boardUtils';
 import { generateAllPossibleMoves, boardToBitboards, getNextBoard, getPreviousBoard, removeMarble, bitboardsToBoard, } from '../utils/boardUtils';
 import PositionItem from './PositionItem';
+import FilterOptions from './FilterOptions';
 import { useParams } from 'react-router-dom';
 import './AnalysisPage.css';
 
@@ -21,8 +22,18 @@ const AnalysisPage = () => {
   const [nextPositions, setNextPositions] = useState([]);
   const [currentAction, setCurrentAction] = useState({ type: null, placement: null, rotation: null });
   const [considerSymmetrical, setConsiderSymmetrical] = useState(false);
-  const [hoveredMarble, setHoveredMarble] = useState(null)
-  const [hoveredRotation, setHoveredRotation] = useState(null)
+  const [hoveredMarble, setHoveredMarble] = useState(null);
+  const [hoveredRotation, setHoveredRotation] = useState(null);
+  const [hoveredIndex, setHoveredIndex] = useState(null);
+  const [filterOptions, setFilterOptions] = useState({
+    usernameWhite: '',
+    usernameBlack: '',
+    whiteRatingMin: '',
+    whiteRatingMax: '',
+    blackRatingMin: '',
+    blackRatingMax: '',
+    daysAgo: '',
+  });
   const { gameId } = useParams();
 
   //TODO: Make sure to handle the situation where current action is incomplete
@@ -35,18 +46,29 @@ const AnalysisPage = () => {
     fetchNextPositionsFromServer(board);
   }, [considerSymmetrical]);
 
+  useEffect(() => {
+    console.log(filterOptions);
+    console.log(new URLSearchParams(filterOptions).toString())
+  }, [filterOptions]);
+
+  const applyFilters = () => {
+    fetchNextPositionsFromServer(board);
+  };
+
+  /*
   const fetchNextPositionsFromServer = async (newBoard) => {
     setHoveredMarble(null);
     setHoveredRotation(null);
     const nextPositionsMoves = await fetchNextPositions(newBoard, considerSymmetrical);
     setNextPositions(nextPositionsMoves);
   };
-  /*
+*/
   const fetchNextPositionsFromServer = async (newBoard) => {
-    const nextPositionsMoves = await fetchNextPositions(newBoard);
+    setHoveredMarble(null);
+    setHoveredRotation(null);
+    const nextPositionsMoves = await fetchNextPositions(newBoard, considerSymmetrical, filterOptions);
     setNextPositions(nextPositionsMoves);
   };
-  */
 
   const initialBoardKey = boardToString(board);
   const initialNode = new Node(null);
@@ -170,6 +192,14 @@ const AnalysisPage = () => {
     handleMoveWithBoard(move, getNextBoard(board, move));
     setOpponentMove(move);
   };
+  
+  useEffect(() => {
+    if (hoveredIndex !== null && nextPositions[hoveredIndex]) {
+      const newPosition = nextPositions[hoveredIndex];
+      setHoveredMarble(newPosition.move.placement);
+      setHoveredRotation(newPosition.move.rotation);
+    }
+  }, [nextPositions]);
 
   return (
     <div className="analysis">
@@ -204,14 +234,14 @@ const AnalysisPage = () => {
           <PositionItem
             key={index}
             position={position}
-            onMoveHover={(move) => {
-              console.log(move.rotation);
-              console.log(move.placement)
+            index={index}
+            onMoveHover={(move, index) => {
+              setHoveredIndex(index);
               setHoveredMarble(move.placement);
               setHoveredRotation(move.rotation);
             }}
             onMoveLeave={() => {
-              console.log("mau");
+              setHoveredIndex(null);
               setHoveredMarble(null);
               setHoveredRotation(null);
             }}
@@ -222,16 +252,19 @@ const AnalysisPage = () => {
           />
         ))}
       </div>
-      <div className="consider-symmetrical">
-        <label htmlFor="considerSymmetrical">
-          <input
-            type="checkbox"
-            id="considerSymmetrical"
-            checked={considerSymmetrical}
-            onChange={handleConsiderSymmetricalChange}
-          />
-          Consider symmetrical positions equal
-        </label>
+      <div className="filter-container">
+        <div className="consider-symmetrical">
+          <label htmlFor="considerSymmetrical">
+            <input
+              type="checkbox"
+              id="considerSymmetrical"
+              checked={considerSymmetrical}
+              onChange={handleConsiderSymmetricalChange}
+            />
+            Consider symmetrical positions equal
+          </label>
+        </div>
+        <FilterOptions filterOptions={filterOptions} setFilterOptions={setFilterOptions} onApplyFilters={applyFilters} />
       </div>
     </div>
   );
