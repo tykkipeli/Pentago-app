@@ -4,8 +4,6 @@ import io from 'socket.io-client';
 import GameBoard from './GameBoard';
 import './Game.css';
 
-//TODO: make gameclock time calculation relative to the last time you received the clock times from the server
-
 const Game = ({ player1, player2, gameID, socket }) => {
   const [board, setBoard] = useState(Array(6).fill(Array(6).fill(null)));
   const [currentAction, setCurrentAction] = useState({ type: null, placement: null, rotation: null });
@@ -17,8 +15,9 @@ const Game = ({ player1, player2, gameID, socket }) => {
   const [animationRunning, setAnimationRunning] = useState(false);
   const [player1Rating, setPlayer1Rating] = useState(0);
   const [player2Rating, setPlayer2Rating] = useState(0);
-  const [hoveredMarble, setHoveredMarble] = useState(null)
-  const [hoveredRotation, setHoveredRotation] = useState(null)
+  const [hoveredMarble, setHoveredMarble] = useState(null);
+  const [hoveredRotation, setHoveredRotation] = useState(null);
+  const [lastTimestamp, setLastTimestamp] = useState(null);
 
   const updatePlayerTimes = (player, newTime) => {
     setPlayerTimes((prevTimes) => {
@@ -29,17 +28,21 @@ const Game = ({ player1, player2, gameID, socket }) => {
   useEffect(() => {
     if (socket) {
       const username = sessionStorage.getItem('username');
+      /*
       socket.emit('join_game', { gameID, username });
+      */
 
       socket.on("player_times_after_move", (data) => {
         console.log("Updated player times after move:", data);
-        setPlayerTimes(data);
+        setPlayerTimes(data.playerTimes);
+        setLastTimestamp(data.timestamp); 
       });
 
       socket.on('game_info', (data) => {
         console.log("game_info received");
         setLocalPlayer(data.startingPlayer === username ? 1 : 2);
         setPlayerTimes(data.playerTimes); // Set the initial player times from the server
+        setLastTimestamp(data.timestamp); 
         setPlayer1Rating(data.player1Rating);
         setPlayer2Rating(data.player2Rating);
       });
@@ -74,6 +77,9 @@ const Game = ({ player1, player2, gameID, socket }) => {
           });
         } else if (result.reason === 'disconnection') {
           message += 'Opponent disconnected!';
+        } else if (result.reason === 'resignation') {
+          const resigningPlayer = result.winner === 1 ? player2 : player1;
+          message += `${resigningPlayer} resigned!`;
         }
         setGameResult(message);
         setCurrentPlayer(null);
@@ -91,24 +97,27 @@ const Game = ({ player1, player2, gameID, socket }) => {
   const updatesPerSecond = 10;
   const decimalPlaces = Math.ceil(Math.log10(updatesPerSecond));
   useEffect(() => {
-    if (currentPlayer && !gameResult) {
+    if (currentPlayer && !gameResult && lastTimestamp) {
       const timer = setInterval(() => {
+        const elapsedTime = (Date.now() / 1000) - lastTimestamp;
         setPlayerTimes((prevTimes) => {
           const updatedTimes = { ...prevTimes };
-          updatedTimes[currentPlayer] -= 1.0 / updatesPerSecond;
-
+          updatedTimes[currentPlayer] -= elapsedTime;
+  
           if (updatedTimes[currentPlayer] <= 0) {
             updatedTimes[currentPlayer] = 0;
             clearInterval(timer);
           }
-
+  
           return updatedTimes;
         });
+        setLastTimestamp(Date.now() / 1000);
       }, 1000 / updatesPerSecond);
-
+  
       return () => clearInterval(timer);
     }
-  }, [currentPlayer, gameResult]);
+  }, [currentPlayer, gameResult, lastTimestamp]);
+
 
   useEffect(() => {
     console.log("current player: " + currentPlayer)
@@ -118,6 +127,10 @@ const Game = ({ player1, player2, gameID, socket }) => {
   const handleMove = (move) => {
     socket.emit('make_move', { gameID, move, player: currentPlayer });
     setCurrentPlayer((prevPlayer) => prevPlayer === 1 ? 2 : 1);
+  };
+
+  const handleResign = () => {
+    socket.emit('resign', { gameID, player: localPlayer });
   };
 
   const isLocalPlayerTurn = currentPlayer === localPlayer;
@@ -132,6 +145,11 @@ const Game = ({ player1, player2, gameID, socket }) => {
           </div>
           {!gameResult && <p className="game-status">{isLocalPlayerTurn ? "Your Turn" : "Opponent's Turn"}</p>}
           {gameResult && <p className="game-status">{gameResult}</p>}
+          {!gameResult && (
+            <button className="resign-button" onClick={handleResign}>
+              Resign
+            </button>
+          )}
         </div>
         <GameBoard
           onMove={handleMove}

@@ -84,7 +84,6 @@ def get_position_info_route(white_bitboard, black_bitboard, consider_symmetrical
 @app.route('/api/positions/<white_bitboard>/<black_bitboard>/<consider_symmetrical>', methods=['GET'])
 def get_position_info_route(white_bitboard, black_bitboard, consider_symmetrical):
     consider_symmetrical = consider_symmetrical.lower() == 'true'
-    print("consider_symmetrical:", consider_symmetrical)
     filters = {
         'usernameWhite': request.args.get('usernameWhite', ''),
         'usernameBlack': request.args.get('usernameBlack', ''),

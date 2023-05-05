@@ -18,10 +18,14 @@ const GamePage = () => {
     });
     setSocket(newSocket);
 
+    const username = sessionStorage.getItem('username');
+    newSocket.emit('join_game', { gameID, username });
+
     return () => {
       newSocket.disconnect();
     };
   }, []);
+
 
   return (
     <div>

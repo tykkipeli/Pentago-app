@@ -41,47 +41,79 @@ def on_join_game(data):
                 'startingPlayer': starting_player['username'],
                 'playerTimes': game['playerTimes'],
                 'player1Rating': player1_rating,
-                'player2Rating': player2_rating}, room=game_id)
+                'player2Rating': player2_rating,
+                'timestamp': time.time()}, 
+                room=game_id)
 
 @socketio.on('leave_game')
 def on_leave_game(data):
-    if not is_authenticated(request.sid):
-        return emit('error', {'message': 'Not authenticated'}, room=request.sid)
     game_id = data['gameID']
-    username = sid_to_username[request.sid]
     with games_lock:
-        if game_id not in games:
-            return emit('error', {'message': 'Game not found'}, room=request.sid)
+        if not is_authenticated_for_game(request.sid, game_id):
+            return emit('error', {'message': 'Not authenticated'}, room=request.sid)
+        username = sid_to_username[request.sid]
         game = games[game_id]
         player_index = find_player_index(game, request.sid)
-        if player_index is None:
-            return emit('error', {'message': 'Player not found in the game'}, room=request.sid)
         leave_room(game_id)
         game['players'][player_index]['sid'] = None
         if all(player.get('sid') is None for player in game['players']):
             del games[game_id]
+
+def is_authenticated_for_game(sid, game_id):
+    if game_id not in games:
+        return False
+    game = games[game_id]
+    player_index = find_player_index(game, sid)
+    if player_index is None:
+        return False
+    return True
+
+def is_authenticated_to_make_move(sid, game_id):
+    if game_id not in games:
+        return False
+    game = games[game_id]
+    player_index = find_player_index(game, sid)
+    if player_index is None:
+        return False
+    if not is_current_player(game, player_index):
+        return False
+    return True
 
 @socketio.on('make_move')
 def on_make_move(data):
     game_id = data['gameID']
     move = data['move']
     with games_lock:
-        if game_id in games:
-            game = games[game_id]
-            player_index = find_player_index(game, request.sid)
+        if not is_authenticated_to_make_move(request.sid, game_id):
+            return
+        game = games[game_id]
+        player_index = find_player_index(game, request.sid)
+        if is_valid_move(move, game):
+            if update_player_times(game_id, lock_acquired=True):
+                return
+            emit('opponent_move', move, room=game_id, include_self=False)
+            update_game_position(game, move, player_index)
+            switch_current_player(game, player_index)
+            print(game['playerTimes'])
+            emit("player_times_after_move", {
+                'playerTimes': game["playerTimes"],
+                'timestamp': time.time()},
+                room=game_id)
+            check_game_over(game, game_id)
+            print(game['board'])
+            print(game['board_history'])
 
-            if player_index is not None:
-                if is_valid_move(move, game) and is_current_player(game, player_index):
-                    if update_player_times(game_id, lock_acquired=True):
-                        return
-                    emit('opponent_move', move, room=game_id, include_self=False)
-                    update_game_position(game, move, player_index)
-                    switch_current_player(game, player_index)
-                    print(game['playerTimes'])
-                    emit("player_times_after_move", game["playerTimes"], room=game_id)
-                    check_game_over(game, game_id)
-                    print(game['board'])
-                    print(game['board_history'])
+@socketio.on('resign')
+def on_resign(data):
+    game_id = data['gameID']
+    with games_lock:
+        if not is_authenticated_for_game(request.sid, game_id):
+            return emit('error', {'message': 'Not authenticated'}, room=request.sid)
+        game = games[game_id]
+        player_index = find_player_index(game, request.sid)
+        winner_symbol = 1 if game['players'][player_index]['symbol'] == 2 else 2
+        result = {'winner': winner_symbol}
+        game_end(game_id, result, 'resignation')
 
 
 def handle_game_disconnect(sid):
