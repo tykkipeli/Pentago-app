@@ -1,6 +1,7 @@
 from gevent import sleep
 from .game_data import games, games_lock, game_rooms_lock
 from .game_logic import game_end
+from app import app
 import time
 
 #return True if player lost on time
@@ -35,7 +36,8 @@ def _update_player_times(game_id):
     return False
 
 def background_task():
-    while True:
-        for game_id in list(games.keys()):
-            update_player_times(game_id, games_lock)
-        sleep(1)
+    with app.app_context():
+        while True:
+            for game_id in list(games.keys()):
+                update_player_times(game_id, games_lock)
+            sleep(1)

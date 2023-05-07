@@ -4,43 +4,42 @@ import { useNavigate } from 'react-router-dom';
 import ChatBox from './ChatBox';
 import './GameLobby.css';
 
-const GameLobby = () => {
-  const [socket, setSocket] = useState(null);
+const GameLobby = ({ socket }) => {
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [incomingChallenge, setIncomingChallenge] = useState(null);
   const [isChallenging, setIsChallenging] = useState(false);
+  const own_username = sessionStorage.getItem('username');
 
   const navigate = useNavigate();
+
 
   const handleUserClick = (username) => {
     setSelectedUser(username);
   };
 
+  useEffect(() => {
+    console.log(selectedUser);
+  }, [selectedUser]);
 
   useEffect(() => {
-    const token = sessionStorage.getItem('token');
-    if (!token) {
-      navigate('/login');
-      return;
-    }
-    //const newSocket = io('http://localhost:5000');
-    /*
-    const newSocket = io('http://127.0.0.1:8000', {
-      query: { token },
-    });
-    */
-    const socketUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:8000' : window.location.origin;
-    const newSocket = io(socketUrl, {
-      query: { token },
-    });
-    setSocket(newSocket);
+    console.log("joining lobby debug");
+    socket.emit("join_lobby");
+    socket.emit("request_users");
 
-    newSocket.on('user_joined', (username) => {
-      setUsers((prevUsers) => [...prevUsers, username]);
+    socket.on('user_joined', (username) => {
+      console.log(username + " joined");
+      setUsers((prevUsers) => {
+        if (!prevUsers.includes(username) && username !== own_username) {
+          return [...prevUsers, username];
+        } else {
+          return prevUsers;
+        }
+      });
     });
 
-    newSocket.on('user_left', (username) => {
+    socket.on('user_left', (username) => {
+      console.log("user left" + username);
       setUsers((prevUsers) => prevUsers.filter((prevUser) => prevUser !== username));
       if (username === selectedUser) {
         setSelectedUser(null);
@@ -48,64 +47,56 @@ const GameLobby = () => {
       }
     });
 
-    newSocket.on("users", (initialUsers) => {
+    socket.on("users", (initialUsers) => {
+      /*
       for (let i = 0; i < 100; i++) {
         let newString = `User ${i}`;
         initialUsers.push(newString);
       }
-      setUsers(initialUsers);
+      */
+      const filteredUsers = initialUsers.filter((user) => user !== own_username);
+      setUsers(filteredUsers);
     });
 
-    newSocket.on("connect", () => {
-      console.log("joining lobby debug");
-      newSocket.emit("join_lobby");
-      newSocket.emit("request_users");
-    });
-
-    newSocket.on("challenge_received", (challenger) => {
+    socket.on("challenge_received", (challenger) => {
       console.log("Challenge received")
       setIncomingChallenge(challenger);
     });
 
-    newSocket.on("challenge_canceled", () => {
+    socket.on("challenge_canceled", () => {
       setIncomingChallenge(null);
     });
 
-    newSocket.on("challenge_rejected", () => {
+    socket.on("challenge_rejected", () => {
       setSelectedUser(null);
       setIsChallenging(false);
     });
 
-    /*
-    newSocket.on("challenge_result", (result) => {
-      if (result === "accepted") {
-        // this code is redundant:
-        setIsChallenging(false);
-        navigate("/game", { state: { player1: socket.id, player2: selectedUser } });
-      } else {
-        setSelectedUser(null);
-        setIsChallenging(false);
-      }
-    });
-    */
-
-    newSocket.on("challenge_error", (errorMessage) => {
+    socket.on("challenge_error", (errorMessage) => {
       alert(errorMessage);
       setSelectedUser(null);
       setIsChallenging(false);
     });
 
-    newSocket.on("game_started", ({ player1, player2, gameID }) => {
+    socket.on("game_started", ({ player1, player2, gameID }) => {
       setIsChallenging(false);
       setSelectedUser(null);
       navigate("/game", { state: { player1, player2, gameID } });
     });
 
     return () => {
-      console.log("disconnecting here");
-      newSocket.disconnect();
+      console.log("leaving lobby");
+      socket.emit("leave_lobby");
+      socket.off("user_joined");
+      socket.off("user_left");
+      socket.off("users");
+      socket.off("challenge_received");
+      socket.off("challenge_canceled");
+      socket.off("challenge_rejected");
+      socket.off("challenge_error");
+      socket.off("game_started");
     };
-  }, []);
+  }, [socket]);
 
   return (
     <div className="lobby-container">

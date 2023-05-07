@@ -1,16 +1,17 @@
 // src/components/Game.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client';
 import GameBoard from './GameBoard';
 import './Game.css';
 
-const Game = ({ player1, player2, gameID, socket }) => {
+const Game = ({ gameID, socket, gameResult, setGameResult }) => {
   const [board, setBoard] = useState(Array(6).fill(Array(6).fill(null)));
+  const [player1, setPlayer1] = useState(null);
+  const [player2, setPlayer2] = useState(null);
   const [currentAction, setCurrentAction] = useState({ type: null, placement: null, rotation: null });
   const [localPlayer, setLocalPlayer] = useState(null);
   const [currentPlayer, setCurrentPlayer] = useState(1);
   const [opponentMove, setOpponentMove] = useState(null);
-  const [gameResult, setGameResult] = useState(null);
   const [playerTimes, setPlayerTimes] = useState({ 1: 10, 2: 10 });
   const [animationRunning, setAnimationRunning] = useState(false);
   const [player1Rating, setPlayer1Rating] = useState(0);
@@ -18,12 +19,19 @@ const Game = ({ player1, player2, gameID, socket }) => {
   const [hoveredMarble, setHoveredMarble] = useState(null);
   const [hoveredRotation, setHoveredRotation] = useState(null);
   const [lastTimestamp, setLastTimestamp] = useState(null);
+  const player1Ref = useRef(null);
+  const player2Ref = useRef(null);
 
   const updatePlayerTimes = (player, newTime) => {
     setPlayerTimes((prevTimes) => {
       return { ...prevTimes, [player]: newTime };
     });
   };
+
+  useEffect(() => {
+    player1Ref.current = player1;
+    player2Ref.current = player2;
+  }, [player1, player2]);
 
   useEffect(() => {
     if (socket) {
@@ -40,6 +48,8 @@ const Game = ({ player1, player2, gameID, socket }) => {
 
       socket.on('game_info', (data) => {
         console.log("game_info received");
+        setPlayer1(data.startingPlayer);
+        setPlayer2(data.otherPlayer);
         setLocalPlayer(data.startingPlayer === username ? 1 : 2);
         setPlayerTimes(data.playerTimes); // Set the initial player times from the server
         setLastTimestamp(data.timestamp); 
@@ -55,11 +65,12 @@ const Game = ({ player1, player2, gameID, socket }) => {
         setCurrentPlayer((prevPlayer) => prevPlayer === 1 ? 2 : 1);
       });
 
+      // use useRef, because state variable values are no more up to date within the callback functions closure
       socket.on('game_over', (result) => {
         console.log("game over received")
         let message = "";
         if (result.winner) {
-          const winnerUsername = result.winner === 1 ? player1 : player2;
+          const winnerUsername = result.winner === 1 ? player1Ref.current : player2Ref.current;
           message = `${winnerUsername} wins! `;
         } else if (result.draw) {
           message = 'The game is a draw. ';
@@ -68,7 +79,7 @@ const Game = ({ player1, player2, gameID, socket }) => {
           message += 'Five in a row!';
         } else if (result.reason === 'time_out') {
           const loser = result.winner === 1 ? 2 : 1;
-          const loserUsername = loser === 1 ? player1 : player2;
+          const loserUsername = loser === 1 ? player1Ref.current : player2Ref.current;
           message += `${loserUsername} lost on time!`;
           setPlayerTimes((prevTimes) => {
             const updatedTimes = { ...prevTimes };
@@ -78,7 +89,7 @@ const Game = ({ player1, player2, gameID, socket }) => {
         } else if (result.reason === 'disconnection') {
           message += 'Opponent disconnected!';
         } else if (result.reason === 'resignation') {
-          const resigningPlayer = result.winner === 1 ? player2 : player1;
+          const resigningPlayer = result.winner === 1 ? player2Ref.current : player1Ref.current;
           message += `${resigningPlayer} resigned!`;
         }
         setGameResult(message);

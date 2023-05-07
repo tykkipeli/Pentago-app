@@ -198,6 +198,8 @@ const AnalysisPage = () => {
       const newPosition = nextPositions[hoveredIndex];
       setHoveredMarble(newPosition.move.placement);
       setHoveredRotation(newPosition.move.rotation);
+    } else {
+      setHoveredIndex(null);
     }
   }, [nextPositions]);
 

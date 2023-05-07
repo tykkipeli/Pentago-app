@@ -10,7 +10,7 @@ game_rooms_lock = Lock()
 
 def create_new_game(game_id, player1_username, player2_username, game_duration=600):
     player_order = [player1_username, player2_username]
-    random.shuffle(player_order)
+    #random.shuffle(player_order)
     initial_board = [[0 for _ in range(6)] for _ in range(6)]
     white_bitboard, black_bitboard = board_to_bitboards(initial_board)
     return {

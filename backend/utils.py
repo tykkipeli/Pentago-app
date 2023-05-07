@@ -1,9 +1,11 @@
 import copy
 from bitboard import bitboards_to_board, board_to_bitboards
+from threading import Lock
 
 users_in_lobby = set()
 challenges = {}
 sid_to_username = {}
+lobby_lock = Lock()
 
 
 def get_sid_by_username(username):
@@ -107,18 +109,6 @@ def group_next_positions_info(next_positions_info, white_bitboard, black_bitboar
         grouped_positions[key]['white_bb'] = new_bitboard[0]
         grouped_positions[key]['black_bb'] = new_bitboard[1]
     return list(grouped_positions.values())
-
-
-'''
-#From all the symmetrical positions, find the one that is within reachable_positions and that is minimal among them
-def get_minimal_reachable_position(white_bb, black_bb, reachable_positions):
-    symmetrical_positions = generate_symmetrical_positions(white_bb, black_bb)
-    potential_positions = []
-    for symm_white_bb, symm_black_bb in symmetrical_positions:
-        if (symm_white_bb, symm_black_bb) in reachable_positions:
-            potential_positions.append((symm_white_bb, symm_black_bb))
-    return min(potential_positions)
-'''
 
 
 def rotate_quadrant(board, quadrant, direction):

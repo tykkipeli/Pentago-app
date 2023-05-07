@@ -21,7 +21,6 @@ def on_join_game(data):
         return emit('error', {'message': 'Not authenticated'}, room=request.sid)
     game_id = data['gameID']
     username = sid_to_username[request.sid]
-    join_room(game_id)
     print(username, "joined the game")
     with games_lock:
         if game_id not in games:
@@ -30,15 +29,23 @@ def on_join_game(data):
         player_info = next((player for player in game['players'] if player['username'] == username), None)
         if player_info is None:
             return emit('error', {'message': 'Player not found in the game'}, room=request.sid)
+        if player_info['sid'] == request.sid:
+            return emit('error', {'message': 'Player has already joined the game'}, room=request.sid)
         player_info['sid'] = request.sid
+        join_room(game_id)
+        print("here we are")
         if all(player.get('sid') is not None for player in game['players']):
             game['lastMoveTimestamp'] = time.time()
             starting_player = next(player for player in game['players'] if player['symbol'] == game['currentPlayer'])
             other_player = next(player for player in game['players'] if player['symbol'] != game['currentPlayer'])
             player1_rating = get_user_rating(starting_player['username'])
             player2_rating = get_user_rating(other_player['username'])
+            print("starting game")
+            print(starting_player['username'], player1_rating)
+            print(other_player['username'], player2_rating)
             emit('game_info', {
                 'startingPlayer': starting_player['username'],
+                'otherPlayer': other_player['username'],
                 'playerTimes': game['playerTimes'],
                 'player1Rating': player1_rating,
                 'player2Rating': player2_rating,
@@ -47,17 +54,29 @@ def on_join_game(data):
 
 @socketio.on('leave_game')
 def on_leave_game(data):
-    game_id = data['gameID']
+    remove_user_from_game(request.sid)
+
+def remove_user_from_game(sid):
     with games_lock:
-        if not is_authenticated_for_game(request.sid, game_id):
-            return emit('error', {'message': 'Not authenticated'}, room=request.sid)
-        username = sid_to_username[request.sid]
-        game = games[game_id]
-        player_index = find_player_index(game, request.sid)
-        leave_room(game_id)
-        game['players'][player_index]['sid'] = None
-        if all(player.get('sid') is None for player in game['players']):
-            del games[game_id]
+        for game_id, game in games.items():
+            player = next((player for player in game["players"] if player.get("sid") == sid), None)
+            if player:
+                winner_symbol = 1 if player['symbol'] == 2 else 2
+                result = {'winner': winner_symbol}
+                game_end(game_id, result, 'disconnection')
+                break
+    with game_rooms_lock:
+        for game_id, room in list(game_rooms.items()):
+            username = sid_to_username.get(sid)
+            if username in room['players']:
+                leave_room(game_id, sid=sid)
+                socketio.emit("user_left_game", username, room=game_id, include_self=False)
+                if username in room['players']:
+                    print("removing username from room")
+                    room['players'].remove(username)
+                if not room['players']:
+                    print("delete game_room")
+                    del game_rooms[game_id]
 
 def is_authenticated_for_game(sid, game_id):
     if game_id not in games:
@@ -115,22 +134,5 @@ def on_resign(data):
         result = {'winner': winner_symbol}
         game_end(game_id, result, 'resignation')
 
-
-def handle_game_disconnect(sid):
-    with games_lock:
-        for game_id, game in games.items():
-            player = next((player for player in game["players"] if player.get("sid") == sid), None)
-            if player:
-                winner_symbol = 1 if player['symbol'] == 2 else 2
-                result = {'winner': winner_symbol}
-                game_end(game_id, result, 'disconnection')
-                break
-    with game_rooms_lock:
-        for game_id, room in list(game_rooms.items()):
-            username = sid_to_username.get(sid)
-            if username in room['players']:
-                room['players'].remove(player)
-                if not room['players']:
-                    del game_rooms[game_id]
 
 socketio.start_background_task(background_task)

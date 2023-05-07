@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Link, Navigate } from 'react-router-dom';
+import { io } from 'socket.io-client';
 import Home from './components/Home';
 import About from './components/About';
 import GameBoard from './components/GameBoard';
@@ -19,6 +20,7 @@ import ProfilePage from './components/ProfilePage';
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState('');
+  const [socket, setSocket] = useState(null);
 
   useEffect(() => {
     const token = sessionStorage.getItem('token');
@@ -28,6 +30,24 @@ function App() {
       setUsername(savedUsername);
     }
   }, []);
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      const token = sessionStorage.getItem('token');
+      const socketUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:8000' : window.location.origin;
+      const newSocket = io(socketUrl, {
+        query: { token },
+      });
+      setSocket(newSocket);
+      return () => {
+        if (newSocket) {
+          newSocket.close();
+        }
+      };
+    } else {
+      setSocket(null);
+    }
+  }, [isLoggedIn]);
 
   const handleLogin = (token, username) => {
     setIsLoggedIn(true);
@@ -52,9 +72,9 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route
               path="/game-lobby"
-              element={isLoggedIn ? <GameLobby /> : <Navigate to="/login" />}
+              element={isLoggedIn ? <GameLobby socket={socket} /> : <Navigate to="/login" />}
             />
-            <Route path="/game" element={<GamePage />} />
+            <Route path="/game" element={<GamePage socket={socket} />} />
             <Route path="/analysis/:gameId?" element={<AnalysisPage />} />
             <Route path="/ranking" element={<RankingPage />} />
             <Route

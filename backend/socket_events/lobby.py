@@ -2,15 +2,12 @@ from flask import request
 from flask_socketio import join_room, leave_room, emit
 from app import socketio
 from auth import get_username_from_token
-from utils import users_in_lobby, challenges, sid_to_username, get_sid_by_username
+from utils import users_in_lobby, challenges, sid_to_username, get_sid_by_username, lobby_lock
 import time
 import random
 import bleach
 from .game_data import games, create_new_game, game_rooms
-from .game_socket import handle_game_disconnect
-
-# TODO Resolve any concurrency issues related do shared data such as users_in_lobby, challenges or sid_to_username!
-
+from .game_socket import remove_user_from_game
 
 @socketio.on("connect")
 def on_connect():
@@ -24,16 +21,18 @@ def on_connect():
 
 @socketio.on("request_users")
 def on_request_users():
-    emit("users", list(users_in_lobby))
+    with lobby_lock:
+        emit("users", list(users_in_lobby))
 
 
 @socketio.on("join_lobby")
 def on_join_lobby():
     username = sid_to_username.get(request.sid)
-    if username and username not in users_in_lobby:
-        join_room("lobby")
-        users_in_lobby.add(username)
-        emit("user_joined", username, room="lobby", broadcast=True)
+    with lobby_lock:
+        if username and username not in users_in_lobby:
+            join_room("lobby")
+            users_in_lobby.add(username)
+            emit("user_joined", username, room="lobby", broadcast=True)
 
 
 @socketio.on("leave_lobby")
@@ -41,11 +40,27 @@ def on_leave_lobby(user=None):
     username = sid_to_username.get(request.sid)
     if not user:
         user = username
-    if user and user in users_in_lobby:
-        leave_room("lobby")
-        users_in_lobby.remove(user)
-        emit("user_left", user, room="lobby", broadcast=True)
+    with lobby_lock:
+        if user and user in users_in_lobby:
+            remove_user_from_challenges(user)
+            leave_room("lobby")
+            users_in_lobby.remove(user)
+            print(username, "left lobby")
+            emit("user_left", user, room="lobby", broadcast=True)
 
+def remove_user_from_challenges(username):
+    if username in challenges:
+        challenged_username = challenges.get(username)
+        challenged_sid = get_sid_by_username(challenged_username)
+        socketio.emit("challenge_canceled", room=challenged_sid)
+        del challenges[username]
+    challenged_by = [challenger for challenger,
+                    challenged in challenges.items() if challenged == username]
+    if challenged_by:
+        challenger_username = challenged_by[0]
+        challenger_sid = get_sid_by_username(challenger_username)
+        socketio.emit("challenge_rejected", room=challenger_sid)
+        del challenges[challenger_username]
 
 @socketio.on('disconnect')
 def on_disconnect():
@@ -54,101 +69,123 @@ def on_disconnect():
     print(username, "disconnected")
     if username and username in users_in_lobby:
         on_leave_lobby(username)
-    if username in challenges:
-        challenged_username = challenges.get(username)
-        challenged_sid = get_sid_by_username(challenged_username)
-        emit("challenge_canceled", room=challenged_sid)
-        del challenges[username]
-    challenged_by = [challenger for challenger,
-                     challenged in challenges.items() if challenged == username]
-    if challenged_by:
-        challenger_username = challenged_by[0]
-        challenger_sid = get_sid_by_username(challenger_username)
-        emit("challenge_rejected", room=challenger_sid)
-        #emit("challenge_canceled", room=challenger_sid)
-        del challenges[challenger_username]
     if request.sid in sid_to_username:
         del sid_to_username[request.sid]
     # Game-related disconnection handling
-    handle_game_disconnect(request.sid)
+    remove_user_from_game(request.sid)
 
 
 @socketio.on("challenge")
 def on_challenge(challenged_username):
-    challenger_username = sid_to_username.get(request.sid)
-    challenged_sid = get_sid_by_username(challenged_username)
-    if not challenged_sid:
-        return
-    # Check if the challenger is already challenging someone or being challenged by someone
-    if challenger_username in challenges or any(challenger_username in v for v in challenges.values()):
-        emit("challenge_error",
-             f"You are already involved in a challenge.", room=request.sid)
-        return
-    # Check if the challenged user is already being challenged or challenging someone
-    if challenged_username in challenges or any(challenged_username in v for v in challenges.values()):
-        emit("challenge_error",
-             f"{challenged_username} is already involved in a challenge.", room=request.sid)
-        return
-    challenges[challenger_username] = challenged_username
-    emit("challenge_received", challenger_username, room=challenged_sid)
+    print("on challenge called")
+    with lobby_lock:
+        challenger_username = sid_to_username.get(request.sid)
+        challenged_sid = get_sid_by_username(challenged_username)
+        if not challenged_sid:
+            return
+        # Check if the challenger is already challenging someone or being challenged by someone
+        if challenger_username in challenges or any(challenger_username in v for v in challenges.values()):
+            emit("challenge_error",
+                f"You are already involved in a challenge.", room=request.sid)
+            return
+        # Check if the challenged user is already being challenged or challenging someone
+        if challenged_username in challenges or any(challenged_username in v for v in challenges.values()):
+            emit("challenge_error",
+                f"{challenged_username} is already involved in a challenge.", room=request.sid)
+            return
+        if challenger_username == challenged_username:
+            emit("challenge_error",
+                f"You cannot challenge yourself", room=request.sid)
+            return
+        if not players_in_same_room(challenger_username, challenged_username):
+            emit("challenge_error",
+                f"Players are not in the same room", room=request.sid)
+            return
+        if players_in_ongoing_game(challenger_username, challenged_username):
+            emit("challenge_error",
+                f"Players are already in an ongoing game", room=request.sid)
+            return
+        challenges[challenger_username] = challenged_username
+        print("sending challenge")
+        emit("challenge_received", challenger_username, room=challenged_sid)
 
+def players_in_ongoing_game(challenger_username, challenged_username):
+    game_id = get_game_room(challenger_username, challenged_username)
+    return game_id and game_id in games
+
+def players_in_same_room(challenger_username, challenged_username):
+    if get_game_room(challenger_username, challenged_username) is not None:
+        return True
+    if challenger_username in users_in_lobby and challenged_username in users_in_lobby:
+        return True
+    return False
+
+def get_game_room(challenger_username, challenged_username):
+    for key, game_room in game_rooms.items():
+        if challenger_username in game_room['players'] and challenged_username in game_room['players']:
+            return key
+    return None
 
 @socketio.on("accept_challenge")
 def on_accept_challenge():
     challenged_username = sid_to_username.get(request.sid)
-    challenger_username = next(
-        (k for k, v in challenges.items() if v == challenged_username), None)
-    if challenger_username:
-        challenger_sid = get_sid_by_username(challenger_username)
-
-        game_room = f"{challenger_username}-{challenged_username}"
-        join_room(game_room, sid=challenger_sid)
-        join_room(game_room, sid=request.sid)
-
-        # Generate a unique game ID (use a more robust method for real-world applications)
-        game_id = f"{challenger_username}-{challenged_username}-{time.time()}"
-
-        # Notify both players that the game has started
-        # Create a new game and get the randomized player order
-        game_rooms[game_id] = {
-            'players': [challenger_username, challenged_username ],
-        }
-        game = create_new_game(
-            game_id, challenger_username, challenged_username)
-        games[game_id] = game
-
-        # Notify both players that the game has started
-        emit("game_started", {
-            "player1": game['players'][0]['username'],
-            "player2": game['players'][1]['username'],
-            "gameID": game_id}, room=game_room)
-
-        del challenges[challenger_username]
+    with lobby_lock:
+        challenger_username = next(
+            (k for k, v in challenges.items() if v == challenged_username), None)
+        if challenger_username:
+            challenger_sid = get_sid_by_username(challenger_username)
+            game_id = get_game_room(challenged_username, challenged_username)
+            if not game_id:
+                # Generate a unique game ID (use a more robust method for real-world applications)
+                game_id = f"{challenger_username}-{challenged_username}-{time.time()}"
+                join_room(game_id, sid=challenger_sid)
+                join_room(game_id, sid=request.sid)
+                # Notify both players that the game has started
+                # Create a new game and get the randomized player order
+                players = [challenger_username, challenged_username]
+                random.shuffle(players)
+                game_rooms[game_id] = {
+                    'players': players,
+                }
+            else:
+                #switch player colors in rematch games:
+                game_rooms[game_id]['players'].reverse()
+            game = create_new_game(
+                game_id, game_rooms[game_id]['players'][0], game_rooms[game_id]['players'][1])
+            games[game_id] = game
+            # Notify both players that the game has started
+            emit("game_started", {
+                "player1": game['players'][0]['username'],
+                "player2": game['players'][1]['username'],
+                "gameID": game_id}, room=game_id)
+            del challenges[challenger_username]
 
 
 @socketio.on("reject_challenge")
 def on_reject_challenge():
     challenged_username = sid_to_username.get(request.sid)
-    challenger_username = next(
-        (k for k, v in challenges.items() if v == challenged_username), None)
+    with lobby_lock:
+        challenger_username = next(
+            (k for k, v in challenges.items() if v == challenged_username), None)
 
-    if challenger_username:
-        challenger_sid = get_sid_by_username(challenger_username)
-        #emit("challenge_result", "rejected", room=challenger_sid)
-        #emit("challenge_rejected", room=request.sid)
-        emit("challenge_rejected", room=challenger_sid)
-        del challenges[challenger_username]
+        if challenger_username:
+            challenger_sid = get_sid_by_username(challenger_username)
+            #emit("challenge_result", "rejected", room=challenger_sid)
+            #emit("challenge_rejected", room=request.sid)
+            emit("challenge_rejected", room=challenger_sid)
+            del challenges[challenger_username]
 
 
 @socketio.on("cancel_challenge")
 def on_cancel_challenge():
     challenger_username = sid_to_username.get(request.sid)
-    challenged_username = challenges.get(challenger_username)
+    with lobby_lock:
+        challenged_username = challenges.get(challenger_username)
 
-    if challenged_username:
-        challenged_sid = get_sid_by_username(challenged_username)
-        emit("challenge_canceled", room=challenged_sid)
-        del challenges[challenger_username]
+        if challenged_username:
+            challenged_sid = get_sid_by_username(challenged_username)
+            emit("challenge_canceled", room=challenged_sid)
+            del challenges[challenger_username]
 
 
 @socketio.on("send_message")

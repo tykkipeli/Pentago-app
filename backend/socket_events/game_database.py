@@ -39,12 +39,12 @@ def update_ratings(white_id, black_id, winner_id):
     else:
         outcome = 0.5
 
-    print(white_id, black_id, winner_id)
-    print(white_rating, black_rating, white_games_played, black_games_played, outcome)
+    #print(white_id, black_id, winner_id)
+    #print(white_rating, black_rating, white_games_played, black_games_played, outcome)
     new_white_rating, new_black_rating = get_new_elo_ratings(
         white_rating, black_rating, white_games_played, black_games_played, outcome
     )
-    print(new_white_rating, new_black_rating)
+    #print(new_white_rating, new_black_rating)
     update_user_rating(white_id, new_white_rating)
     update_user_rating(black_id, new_black_rating)
 
