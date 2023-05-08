@@ -123,10 +123,10 @@ def generate_sql_query(symmetrical_positions, filters):
     filter_conditions = []
     bind_params = {}
     if filters['usernameWhite']:
-        filter_conditions.append("LOWER(u_white.username) = LOWER(:usernameWhite)")
+        filter_conditions.append("u_white.username = :usernameWhite")
         bind_params['usernameWhite'] = filters['usernameWhite']
     if filters['usernameBlack']:
-        filter_conditions.append("LOWER(u_black.username) = LOWER(:usernameBlack)")
+        filter_conditions.append("u_black.username = :usernameBlack")
         bind_params['usernameBlack'] = filters['usernameBlack']
     if filters['whiteRatingMin']:
         filter_conditions.append("u_white.rating >= :whiteRatingMin")

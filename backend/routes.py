@@ -9,6 +9,7 @@ from sqlalchemy.sql.expression import or_, and_
 from app import db
 from sqlalchemy import text
 from database.db_utils import get_position_info, get_users, get_profile_data, get_recent_games_data
+import re
 
 
 @app.route('/', defaults={'path': ''})
@@ -46,7 +47,6 @@ def logout():
 def users():
     return jsonify({"users": list(users_in_lobby)})
 
-
 @app.route('/api/register', methods=['POST'])
 def register():
     data = request.get_json()
@@ -55,6 +55,17 @@ def register():
 
     if not username or not password:
         return jsonify({'error': 'Username and password are required'}), 400
+
+    # Validate the username
+    username_pattern = re.compile(
+        r"^(?=[A-Za-z])(?!.*[-_]{2,})[A-Za-z0-9_-]*[A-Za-z0-9]$"
+    )
+    if not (3 <= len(username) <= 20) or not username_pattern.match(username):
+        return jsonify({'error': 'Invalid username'}), 400
+
+    # Validate the password
+    if len(password) < 8 or len(password) > 128:
+        return jsonify({'error': 'Password must be at least 8 characters long'}), 400
 
     # Check if the user already exists
     existing_user = Users.query.filter_by(username=username).first()
@@ -68,7 +79,6 @@ def register():
     db.session.commit()
 
     return jsonify({'message': 'User registered successfully'}), 201
-
 
 '''
 @app.route('/api/positions/<white_bitboard>/<black_bitboard>/<consider_symmetrical>', methods=['GET'])

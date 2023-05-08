@@ -135,31 +135,39 @@ def rotate_quadrant(board, quadrant, direction):
     return new_board
 
 
+#return True if game is over, the second value is the winner symbol
 def is_game_over_on_board(board):
+    result = [False, False, False]
     # Check rows
     for row in board:
         for i in range(2):
             if row[i:i+5] == [row[i]] * 5 and row[i] != 0:
-                return True, row[i]
+                result[row[i]] = True
 
     # Check columns
     for col in range(6):
         for row in range(2):
             if all(board[row+i][col] == board[row][col] for i in range(5)) and board[row][col] != 0:
-                return True, board[row][col]
+                result[board[row][col]] = True
 
     # Check main diagonals
     for row in range(2):
         for col in range(2):
             if all(board[row+i][col+i] == board[row][col] for i in range(5)) and board[row][col] != 0:
-                return True, board[row][col]
+                result[board[row][col]] = True
 
     # Check secondary diagonals
     for row in range(2):
         for col in range(4, 6):
             if all(board[row+i][col-i] == board[row][col] for i in range(5)) and board[row][col] != 0:
-                return True, board[row][col]
+                result[board[row][col]] = True
 
+    if result[1] and result[2]:
+        return True, None
+    if result[1]:
+        return True, 1
+    if result[2]:
+        return True, 2
     # Check for a draw
     for row in board:
         for cell in row:

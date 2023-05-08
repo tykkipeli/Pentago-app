@@ -5,8 +5,30 @@ const SignupForm = ({ onSignup }) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
+  const validateInputs = () => {
+    const usernamePattern = /^(?=[A-Za-z])(?!.*[-_]{2,})[A-Za-z0-9_-]*[A-Za-z0-9]$/;
+
+    if (username.length < 3 || username.length > 20 || !usernamePattern.test(username)) {
+      setError(`Invalid username. Usernames must be 3-20 characters long, start with a letter and end with a letter or number,
+      and can contain letters, numbers, underscores, and hyphens. Consecutive underscores and hyphens are not allowed.`);
+      return false;
+    }
+    
+
+    if (password.length < 8 || password.length > 128) {
+      setError('Password must be at least 8 and at most 128 characters long');
+      return false;
+    }
+
+    return true;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validateInputs()) {
+      return;
+    }
 
     try {
       const response = await fetch('/api/register', {

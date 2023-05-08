@@ -199,6 +199,7 @@ def on_send_message(data):
             return
     if not username or not message:
         return
+    message = message[:200]
     # Sanitize the message input
     cleaned_message = bleach.clean(message, tags=[], strip=True)
     emit("message", {"username": username, "text": cleaned_message}, room=room)

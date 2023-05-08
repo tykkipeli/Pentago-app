@@ -25,6 +25,10 @@ const ChatBox = ({ socket, room }) => {
 
   const sendMessage = () => {
     if (inputMessage.trim() === '') return;
+    if (inputMessage.length > 200) {
+      alert('Your message is too long. The maximum length is 200 characters.');
+      return;
+    }
     socket.emit('send_message', { message: inputMessage, room });
     setInputMessage('');
   };

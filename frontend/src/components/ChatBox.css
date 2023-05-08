@@ -12,6 +12,7 @@
     margin-bottom: 10px;
     border-radius: 20px;
     box-sizing: border-box;
+    word-break: break-word; 
 }
 
 .send-message-container {
