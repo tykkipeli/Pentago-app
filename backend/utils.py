@@ -3,7 +3,7 @@ from bitboard import bitboards_to_board, board_to_bitboards
 from threading import Lock
 
 users_in_lobby = set()
-challenges = {}
+challenges = {}  # {challenger_username: {"challenged": challenged_username, "time": game_time}}
 sid_to_username = {}
 lobby_lock = Lock()
 
@@ -82,9 +82,9 @@ def generate_symmetrical_positions(white_bitboard, black_bitboard):
 
 def group_next_positions_info(next_positions_info, white_bitboard, black_bitboard):
     reachable_positions = generate_reachable_positions(white_bitboard, black_bitboard)
-    for pos in reachable_positions:
-        print_bitboard(pos[0], pos[1])
-    print(len(reachable_positions))
+    #for pos in reachable_positions:
+    #    print_bitboard(pos[0], pos[1])
+    #print(len(reachable_positions))
     grouped_positions = {}
 
     for pos_info in next_positions_info:
@@ -175,3 +175,11 @@ def is_game_over_on_board(board):
                 return False, None
 
     return True, None  # Draw
+
+
+def is_valid_integer(s):
+    try:
+        int(s)
+        return True
+    except ValueError:
+        return False

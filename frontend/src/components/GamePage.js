@@ -40,8 +40,8 @@ const GamePage = ({ socket }) => {
 
   useEffect(() => {
     if (socket) {
-      socket.on("challenge_received", (challenger) => {
-        setIncomingChallenge(challenger);
+      socket.on("challenge_received", (challenge) => {
+        setIncomingChallenge(challenge['challenger']);
       });
 
       socket.on("challenge_canceled", () => {
@@ -79,7 +79,7 @@ const GamePage = ({ socket }) => {
 
   const handleRematch = () => {
     if (gameResult) {
-      socket.emit("challenge", opponent_username);
+      socket.emit("challenge", { challenged_username: opponent_username, game_time: 0 });
       setIsChallenging(true);
     }
   };

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { io } from 'socket.io-client';
 import { useNavigate } from 'react-router-dom';
 import ChatBox from './ChatBox';
 import './GameLobby.css';
+import ChallengeArea from './ChallengeArea';
 
 const GameLobby = ({ socket }) => {
   const [users, setUsers] = useState([]);
@@ -106,46 +106,14 @@ const GameLobby = ({ socket }) => {
       <div class="middle-container">
         <div class="middle-content">
           <div className="button-container-wrapper">
-            <div className="button-container">
-              {selectedUser && !isChallenging && (
-                <button
-                  onClick={() => {
-                    socket.emit("challenge", selectedUser);
-                    setIsChallenging(true);
-                  }}
-                >
-                  Challenge {selectedUser}
-                </button>
-              )}
-              {isChallenging && (
-                <button
-                  onClick={() => {
-                    socket.emit("cancel_challenge");
-                    setIsChallenging(false);
-                  }}
-                >
-                  Cancel challenge
-                </button>
-              )}
-              {incomingChallenge && (
-                <>
-                  <div className="incoming-challenge-message">
-                    {incomingChallenge} has challenged you!
-                  </div>
-                  <button onClick={() => socket.emit("accept_challenge")}>
-                    Accept
-                  </button>
-                  <button
-                    onClick={() => {
-                      socket.emit("reject_challenge");
-                      setIncomingChallenge(null);
-                    }}
-                  >
-                    Reject
-                  </button>
-                </>
-              )}
-            </div>
+            <ChallengeArea
+              selectedUser={selectedUser}
+              isChallenging={isChallenging}
+              incomingChallenge={incomingChallenge}
+              socket={socket}
+              setIsChallenging={setIsChallenging}
+              setIncomingChallenge={setIncomingChallenge}
+            />
           </div>
           <div className="user-list-wrapper">
             <ul className="user-list">

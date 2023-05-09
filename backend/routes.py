@@ -2,7 +2,7 @@ from flask import send_from_directory, render_template, jsonify, request, url_fo
 import os
 from app import app
 from auth import get_username_from_token, create_encoded_token
-from utils import users_in_lobby
+from utils import users_in_lobby, is_valid_integer
 from werkzeug.security import generate_password_hash, check_password_hash
 from database.models import Users, Games, Positions
 from sqlalchemy.sql.expression import or_, and_
@@ -80,19 +80,11 @@ def register():
 
     return jsonify({'message': 'User registered successfully'}), 201
 
-'''
-@app.route('/api/positions/<white_bitboard>/<black_bitboard>/<consider_symmetrical>', methods=['GET'])
-def get_position_info_route(white_bitboard, black_bitboard, consider_symmetrical):
-    consider_symmetrical = consider_symmetrical.lower() == 'true'
-    print("consider_symmetrical:", consider_symmetrical)
-    next_positions_info = get_position_info(
-        int(white_bitboard), int(black_bitboard), consider_symmetrical)
-    response = {'next_positions': next_positions_info}
-    return jsonify(response), 200
-'''
 
 @app.route('/api/positions/<white_bitboard>/<black_bitboard>/<consider_symmetrical>', methods=['GET'])
 def get_position_info_route(white_bitboard, black_bitboard, consider_symmetrical):
+    if not white_bitboard.isdigit() or not black_bitboard.isdigit():
+        return jsonify({"error": "Invalid bitboard values"}), 400
     consider_symmetrical = consider_symmetrical.lower() == 'true'
     filters = {
         'usernameWhite': request.args.get('usernameWhite', ''),
@@ -103,6 +95,9 @@ def get_position_info_route(white_bitboard, black_bitboard, consider_symmetrical
         'blackRatingMax': request.args.get('blackRatingMax', ''),
         'daysAgo': request.args.get('daysAgo', ''),
     }
+    for key in ['whiteRatingMin', 'whiteRatingMax', 'blackRatingMin', 'blackRatingMax', 'daysAgo']:
+        if filters[key] and not is_valid_integer(filters[key]):
+            return jsonify({"error": f"{key} must be a valid integer"}), 400
     next_positions_info = get_position_info(
         int(white_bitboard), int(black_bitboard), consider_symmetrical, filters)
     response = {'next_positions': next_positions_info}
@@ -110,8 +105,14 @@ def get_position_info_route(white_bitboard, black_bitboard, consider_symmetrical
 
 @app.route('/api/rankings', methods=['GET'])
 def get_users_route():
-    offset = int(request.args.get('offset', 0))
-    limit = int(request.args.get('limit', 10))
+    offset = request.args.get('offset', 0)
+    limit = request.args.get('limit', 10)
+    if not is_valid_integer(offset) or not is_valid_integer(limit):
+        return jsonify({"error": "Invalid offset or limit"}), 400
+    offset = int(offset)
+    limit = int(limit)
+    if offset < 0 or limit < 0:
+        return jsonify({"error": "Invalid offset or limit"}), 404
     users = get_users(offset, limit)
     return jsonify([user.to_dict() for user in users])
 
@@ -128,7 +129,11 @@ def get_recent_games(username):
     user = Users.query.filter_by(username=username).first()
     if not user:
         return jsonify({"error": "User not found"}), 404
-    page = request.args.get('page', 1, type=int)
+    page = request.args.get('page', 1)
+    # Check if page is a valid integer
+    if not is_valid_integer(page):
+        return jsonify({"error": "Invalid page number"}), 400
+    page = int(page)
     items_per_page = 10
     game_data, next_url, prev_url = get_recent_games_data(user, page, items_per_page)
 
