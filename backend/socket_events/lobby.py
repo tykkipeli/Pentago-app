@@ -134,8 +134,8 @@ def on_accept_challenge():
     challenged_username = sid_to_username.get(request.sid)
     with lobby_lock:
         challenger_username = next((k for k, v in challenges.items() if v["challenged"] == challenged_username), None)
-        challenge_data = challenges[challenger_username]
         if challenger_username:
+            challenge_data = challenges[challenger_username]
             challenger_sid = get_sid_by_username(challenger_username)
             game_id = get_game_room(challenged_username, challenged_username)
             if not game_id:

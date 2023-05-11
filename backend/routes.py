@@ -143,6 +143,32 @@ def get_recent_games(username):
         'prev_url': prev_url
     })
 
+@app.route('/api/userinfo/<username>', methods=['GET'])
+def get_user_info(username):
+    print("get_user_info", username)
+    user = Users.query.filter_by(username=username).first()
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    last_five_games = Games.query.filter(
+        or_(Games.black_id == user.id, Games.white_id == user.id)
+    ).order_by(Games.id.desc()).limit(5).all()
+
+    game_data = [{
+        'id': game.id,
+        'opponent_username': game.white.username if game.black_id == user.id else game.black.username,
+        'color': 'white' if game.white_id == user.id else 'black',
+        'result': 'win' if game.winner_id == user.id else 'loss',
+        'date': game.date
+    } for game in last_five_games]
+
+    user_info = {
+        "rating": user.rating,
+        "recent_games": game_data,
+    }
+
+    return jsonify(user_info)
+
 @app.route('/api/games/<int:game_id>', methods=['GET'])
 def get_game_positions(game_id):
     game = Games.query.get(game_id)

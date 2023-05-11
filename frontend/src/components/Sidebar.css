@@ -3,14 +3,77 @@
   justify-content: space-between;
   align-items: center;
   background-color: hsl(0, 0%, 0%);
-  padding: 1rem;
+  height: 9vh;
   width: 100%;
+  font-size: 110%;
   position: relative;
 }
+
+.logo {
+  height: 100%; /* Set the height of the image to 100% of the li item */
+  object-fit: contain; /* This will ensure that the image maintains its aspect ratio while fitting within the given dimensions */
+  padding: 10px;
+}
+
+.nav-links li:hover::before,
+.nav-links li.active::before,
+.nav-links li:hover::after,
+.nav-links li.active::after {
+  content: "";
+  position: absolute;
+  background-color: #103C8F;
+  width: 2px;
+  height: 100%;
+}
+
+.nav-links li:hover::before,
+.nav-links li.active::before {
+  left: 0;
+}
+
+.nav-links li:hover::after,
+.nav-links li.active::after {
+  right: 0;
+}
+
+.nav-links .light-source-effect::before,
+.nav-links .light-source-effect::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0; /* set opacity to 0 initially */
+  transition: opacity 0.5s; /* animate opacity */
+}
+
+.nav-links .light-source-effect::before {
+  background-image: radial-gradient(circle at top left, #103C8F 1%, transparent 50%);
+}
+
+.nav-links .light-source-effect::after {
+  background-image: radial-gradient(circle at bottom right, #103C8F 1%, transparent 50%);
+}
+
+.nav-links .light-source-effect.active::before,
+.nav-links .light-source-effect.active::after {
+  opacity: 1; /* set opacity to 1 when active */
+}
+
+.light-source-effect {
+  display: flex; 
+  align-items: center;
+  position: relative;
+  height: 100%;
+  padding: 0px;
+  justify-content: center;
+}
+
 
 .nav-links,
 .auth-links {
   display: flex;
+  height: 100%;
 }
 
 .nav-links ul,
@@ -18,28 +81,62 @@
   display: flex;
   list-style-type: none;
   padding: 0;
+  align-items: center; 
+  margin: 0;
+  height: 100%;
+}
+
+.nav-links li {
+  flex-shrink: 1; /* This will allow the li items to shrink if necessary */
+  flex-grow: 1; /* This will allow the li items to grow if there is space available */
 }
 
 .nav-links li,
 .auth-links li {
-  margin-right: 1rem;
+  display: flex; 
+  align-items: center;
+  position: relative;
+  height: 100%;
+  padding: 0px;
+  justify-content: center;
 }
 
-.nav-links a,
-.auth-links a {
-  text-decoration: none;
+.nav-links a {
+  display: block;
   color: white;
+  text-align: center;
+  padding: 16px;
+  padding-left: 30px;
+  padding-right: 30px;
+  text-decoration: none;
+  position: relative;
+  z-index: 1;
+}
+
+.auth-links a {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 16px;
+  padding-left: 15px;
+  padding-right: 30px;
+  text-decoration: none;
+  position: relative;
+  z-index: 1;
 }
 
 .nav-links a.active,
 .auth-links a.active {
-  font-weight: bold;
+  /* font-weight: bold; */
 }
 
 /*Dropdown*/
 
 .username-wrapper {
   position: relative;
+  padding: 20px;
+  display: flex;
+  align-items: center;
 }
 
 .username-wrapper::before {
@@ -48,14 +145,29 @@
   top: 100%;
   right: 0;
   left: 0;
-  height: 35px;
+  height: 5px;
   z-index: 1;
 }
 
+/*
 .user-dropdown {
   display: inline-block;
   cursor: pointer;
 }
+*/
+
+.login-icon {
+  height: 40px; 
+  object-fit: contain; 
+}
+
+.user-dropdown {
+  display: flex; /* Change from inline-block to flex */
+  justify-content: center; /* Add this line */
+  align-items: center; /* Add this line */
+  cursor: pointer;
+}
+
 
 .dropdown-wrapper {
   position: absolute;
@@ -92,5 +204,4 @@
 .user-dropdown:hover .dropdown-content {
   display: flex;
 }
-
 

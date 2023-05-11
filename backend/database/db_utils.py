@@ -89,7 +89,7 @@ def get_recent_games_data(user, page, items_per_page):
     offset = (page - 1) * items_per_page
     games = Games.query.filter(
         (Games.white_id == user.id) | (Games.black_id == user.id)
-    ).order_by(Games.date.desc()).offset(offset).limit(items_per_page).all()
+    ).order_by(Games.id.desc()).offset(offset).limit(items_per_page).all()
     total_games = Games.query.filter(
         (Games.white_id == user.id) | (Games.black_id == user.id)
     ).count()

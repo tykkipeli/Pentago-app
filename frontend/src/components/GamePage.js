@@ -1,4 +1,4 @@
-import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import io from 'socket.io-client';
 import Game from './Game';
@@ -101,11 +101,9 @@ const GamePage = ({ socket }) => {
   return (
     <div>
       <div className="gamepage-container">
-        <div className="chat-container">
-          {socket && <ChatBox socket={socket} room={gameID} />}
-        </div>
+        {socket && <ChatBox socket={socket} room={gameID} />}
         <div className="game-container">
-          {socket && <Game key={gameKey} socket={socket} gameID={gameID} gameResult={gameResult} setGameResult={setGameResult}/>}
+          {socket && <Game key={gameKey} socket={socket} gameID={gameID} gameResult={gameResult} setGameResult={setGameResult} />}
         </div>
         {gameResult && opponentInGameRoom && (
           <div className="rematch-container">
@@ -126,7 +124,7 @@ const GamePage = ({ socket }) => {
         )}
         {!opponentInGameRoom && (
           <div className="rematch-container">
-              Your opponent has left the game room.
+            Your opponent has left the game room.
           </div>
         )}
       </div>

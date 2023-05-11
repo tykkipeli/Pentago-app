@@ -1,9 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './ChatBox.css';
+import sendArrow from '../assets/send_arrow_placeholder.png';
+
 
 const ChatBox = ({ socket, room }) => {
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
+  const [chatVisible, setChatVisible] = useState(true);
   const chatAreaRef = useRef(null);
 
   useEffect(() => {
@@ -48,27 +51,34 @@ const ChatBox = ({ socket, room }) => {
     return distanceToBottom < 20;
   };
 
+  //TODO chatbox divider becomes unclickable when the screen is too narrow
   return (
-    <div className="chat-wrapper">
-      <h3>Chat</h3>
-      <div className="chat-area" ref={chatAreaRef}>
-        {messages.map((message, index) => (
-          <p key={index}>
-            <strong>{message.username}: </strong>
-            {message.text}
-          </p>
-        ))}
+    <div className="chat-container" style={{ width: chatVisible ? "25%" : "0%" }}>
+      <div className="chat-wrapper">
+        <div className="chat-area" ref={chatAreaRef}>
+          {messages.map((message, index) => (
+            <p key={index}>
+              <strong>{message.username}: </strong>
+              {message.text}
+            </p>
+          ))}
+        </div>
+        <div className="send-message-container">
+          <input
+            type="text"
+            value={inputMessage}
+            onChange={(e) => setInputMessage(e.target.value)}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') sendMessage();
+            }}
+          />
+          <img src={sendArrow} className="sendArrow" alt="sendArrow" onClick={sendMessage}/>
+        </div>
       </div>
-      <div className="send-message-container">
-        <input
-          type="text"
-          value={inputMessage}
-          onChange={(e) => setInputMessage(e.target.value)}
-          onKeyPress={(e) => {
-            if (e.key === 'Enter') sendMessage();
-          }}
-        />
-        <button onClick={sendMessage}>Send</button>
+      <div
+        className={`chatbox-divider ${chatVisible ? "left" : "right"}`}
+        onClick={() => setChatVisible((prevChatVisible) => !prevChatVisible)}
+      >
       </div>
     </div>
   );

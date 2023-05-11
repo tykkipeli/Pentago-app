@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import ChatBox from './ChatBox';
 import './GameLobby.css';
 import ChallengeArea from './ChallengeArea';
+import ChallengeButton from './ChallengeButton';
+import UserInfo from './UserInfo';
+import icon from '../assets/icon_placeholder.png';
 
 const GameLobby = ({ socket }) => {
   const [users, setUsers] = useState([]);
@@ -48,12 +51,12 @@ const GameLobby = ({ socket }) => {
     });
 
     socket.on("users", (initialUsers) => {
-      /*
+
       for (let i = 0; i < 100; i++) {
         let newString = `User ${i}`;
         initialUsers.push(newString);
       }
-      */
+
       const filteredUsers = initialUsers.filter((user) => user !== own_username);
       setUsers(filteredUsers);
     });
@@ -68,13 +71,13 @@ const GameLobby = ({ socket }) => {
     });
 
     socket.on("challenge_rejected", () => {
-      setSelectedUser(null);
+      //setSelectedUser(null);
       setIsChallenging(false);
     });
 
     socket.on("challenge_error", (errorMessage) => {
       alert(errorMessage);
-      setSelectedUser(null);
+      //setSelectedUser(null);
       setIsChallenging(false);
     });
 
@@ -100,12 +103,11 @@ const GameLobby = ({ socket }) => {
 
   return (
     <div className="lobby-container">
-      <div className="chat-container">
-        <ChatBox socket={socket} room="lobby" />
-      </div>
+      <ChatBox socket={socket} room="lobby" />
       <div class="middle-container">
         <div class="middle-content">
           <div className="button-container-wrapper">
+            <h1>Game Lobby</h1>
             <ChallengeArea
               selectedUser={selectedUser}
               isChallenging={isChallenging}
@@ -119,19 +121,33 @@ const GameLobby = ({ socket }) => {
             <ul className="user-list">
               {users.map((username, index) => (
                 <li
-                  key={index}
-                  onClick={() => handleUserClick(username)}
+                  key={username}
                   className={selectedUser === username ? "selected" : ""}
+                  onClick={() => setSelectedUser(username)}
                 >
-                  {username}
+                  <div className='user-wrapper'>
+                    <img src={icon} className="icon" alt="icon" />
+                    {username}
+                  </div>
+
+                  {incomingChallenge === null && !isChallenging ? (
+                    <ChallengeButton
+                      username={username}
+                      socket={socket}
+                      setIsChallenging={setIsChallenging}
+                    />
+                  ) : (
+                    <div style={{ visibility: "hidden" }}>Hidden</div>
+                  )}
                 </li>
               ))}
+              <li id='empty-item'></li>
             </ul>
           </div>
         </div>
       </div>
       <div className="right-container">
-        <p>Placeholder text for other stuff</p>
+        {selectedUser && <UserInfo user={selectedUser} />}
       </div>
     </div>
   );
