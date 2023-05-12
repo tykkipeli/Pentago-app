@@ -1,0 +1,79 @@
+.modal-overlay {
+    position: absolute;
+    top: 55%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 45vw;
+    height: 50vh;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 2em; 
+    z-index: 1000;
+}
+
+.modal-close {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    border: none;
+    background: none;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.modal-content {
+    text-align: center;
+}
+
+.modal-content h1 {
+    font-size: 2.8em;
+    margin: 0px;
+    margin-bottom: 5px;
+}
+
+.game-result-message {
+    font-size: 3em;
+}
+
+.game-result-reason {
+    font-size: 1.6em;
+    margin-bottom: 20px;
+}
+
+.player-area {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    position: relative;
+    padding-top: 50px;
+}
+
+.player {
+    width: 250px;
+}
+
+.player h2 {
+    font-size: 1.2em;
+    font-style: normal;
+    margin-bottom: 0px;
+}
+
+.player h3 {
+    font-size: 2.2em;
+    display: flex;
+    flex-direction: column;
+}
+
+.rating-increased {
+    color: rgb(9, 211, 9);
+}
+
+.rating-decreased {
+    color: rgb(180, 14, 14);
+}
+
+.rating-change {
+    font-size: 0.7em;
+}

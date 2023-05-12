@@ -10,6 +10,8 @@ import icon from '../assets/icon_placeholder.png';
 const GameLobby = ({ socket }) => {
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [challengedUser, setChallengedUser] = useState(null);
+  const [challengeTime, setChallengeTime] = useState(null);
   const [incomingChallenge, setIncomingChallenge] = useState(null);
   const [isChallenging, setIsChallenging] = useState(false);
   const own_username = sessionStorage.getItem('username');
@@ -82,9 +84,11 @@ const GameLobby = ({ socket }) => {
     });
 
     socket.on("game_started", ({ player1, player2, gameID }) => {
+      const playerOne = player1;
+      const playerTwo = player2;
       setIsChallenging(false);
       setSelectedUser(null);
-      navigate("/game", { state: { player1, player2, gameID } });
+      navigate("/game", { state: { playerOne, playerTwo, gameID } });
     });
 
     return () => {
@@ -109,12 +113,13 @@ const GameLobby = ({ socket }) => {
           <div className="button-container-wrapper">
             <h1>Game Lobby</h1>
             <ChallengeArea
-              selectedUser={selectedUser}
               isChallenging={isChallenging}
               incomingChallenge={incomingChallenge}
               socket={socket}
               setIsChallenging={setIsChallenging}
               setIncomingChallenge={setIncomingChallenge}
+              challengedUser={challengedUser}
+              challengeTime={challengeTime}
             />
           </div>
           <div className="user-list-wrapper">
@@ -135,6 +140,8 @@ const GameLobby = ({ socket }) => {
                       username={username}
                       socket={socket}
                       setIsChallenging={setIsChallenging}
+                      setChallengedUser={setChallengedUser}
+                      setChallengeTime={setChallengeTime}
                     />
                   ) : (
                     <div style={{ visibility: "hidden" }}>Hidden</div>

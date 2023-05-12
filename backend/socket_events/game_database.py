@@ -17,7 +17,7 @@ def store_game_result(game, result):
         prev_position_id = store_position_to_db(game_db_id, white_bitboard, black_bitboard, prev_position_id)
 
     # Update player ratings
-    update_ratings(white_id, black_id, winner_id)
+    return update_ratings(white_id, black_id, winner_id)
 
 def find_player_indeces(game, result):
     white_id = get_user_id(next(player["username"] for player in game["players"] if player["symbol"] == 1))
@@ -47,4 +47,5 @@ def update_ratings(white_id, black_id, winner_id):
     #print(new_white_rating, new_black_rating)
     update_user_rating(white_id, new_white_rating)
     update_user_rating(black_id, new_black_rating)
+    return white_rating, new_white_rating, black_rating, new_black_rating
 

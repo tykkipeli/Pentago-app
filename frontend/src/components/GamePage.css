@@ -1,9 +1,164 @@
 .gamepage-container {
-    display: flex;
-    justify-content: space-between;
-    height: 87vh;
-  }
-  
-  .game-container {
-    width: 75%; /* Increase the width of the game container */
-  }
+  display: flex;
+  justify-content: space-between;
+  height: 91vh;
+}
+
+.game-container {
+  width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.game-wrapper {
+  display: flex;
+  height: 100%;
+  flex-direction: row;
+  align-items: center;
+}
+
+.rightside-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  width: 25%;
+}
+
+.player-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #052a50;
+  color: white;
+  height: 55%;
+  width: 75%;
+  border-top-left-radius: 15px;
+  border-bottom-left-radius: 15px;
+  border-top: 3px solid #1F75C3;
+  border-bottom: 3px solid #1F75C3;
+  border-left: 3px solid #1F75C3;
+  position: relative;
+  transition: all 1s;
+}
+
+.whiteborder {
+  border-top: 3px solid #ffffff;
+  border-bottom: 3px solid #ffffff;
+  border-left: 3px solid #ffffff;
+  background: #6A696A;
+}
+
+.blackborder {
+  border-top: 3px solid black;
+  border-bottom: 3px solid black;
+  border-left: 3px solid black;
+  background: #121112;
+}
+
+.player-wrapper.active {
+  height: 65%; /* bigger size */
+  width: 100%;
+}
+
+.player-wrapper.active .player-time {
+  font-size: 60px; 
+}
+
+.player-time {
+  width: 50%;
+  height: 100%;
+  font-size: 40px;
+  flex: 0.4;
+  padding-left: 5%;
+  padding-right: 0%;
+  margin: 0px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 1s;
+}
+
+.player-details {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 0.6;
+  padding-left: 0px; 
+  overflow: hidden;
+}
+
+.player-wrapper.active .player-details p:first-child {
+  font-size: 22px; 
+}
+
+.player-details p:first-child {
+  font-size: 18px;
+  margin: 0px;
+  padding: 4%;
+}
+
+.player-details p:last-child {
+  font-size: 20px;
+  margin: 0px;
+  padding: 4%;
+}
+
+.player-times-wrapper {
+  height: 35%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 20px;
+}
+
+.player-circle-white {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-left: 5px;
+  background: white;
+}
+
+.player-circle-black {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-left: 5px;
+  background: black;
+}
+
+.player-times-wrapper.reverse {
+  flex-direction: column-reverse;
+}
+
+.resign-button {
+  align-self: center;
+  font-size: 15px;
+  padding: 15px;
+  margin: 15px;
+  background-color: black;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+
+.resign-container {
+  width: 100%;
+  height: 25%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.rematcharea-wrapper {
+  display: flex;
+  justify-content: center;
+  height: 25%;
+  padding: 10%;
+}

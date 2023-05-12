@@ -40,8 +40,19 @@ def check_game_over(game, game_id):
     return False
 
 def game_end(game_id, result, reason):
-    socketio.emit('game_over', {**result, 'reason': reason}, room=game_id)
-    store_game_result(games[game_id], result)
+    white_rating, new_white_rating, black_rating, new_black_rating = store_game_result(games[game_id], result)
+    socketio.emit('game_over', {
+        **result, 
+        'reason': reason, 
+        'old_ratings': {
+            'white': white_rating, 
+            'black': black_rating
+        }, 
+        'new_ratings': {
+            'white': new_white_rating, 
+            'black': new_black_rating
+        }
+    }, room=game_id)
     del games[game_id]
 
 def find_player_index(game, request_sid):

@@ -2,13 +2,15 @@ import React, { useState } from 'react';
 import backArrow from '../assets/back_arrow_placeholder.png';
 import './ChallengeButton.css';
 
-const ChallengeButton = ({ username, socket, setIsChallenging }) => {
+const ChallengeButton = ({ username, socket, setIsChallenging, setChallengedUser, setChallengeTime }) => {
   const [showChallengeOptions, setShowChallengeOptions] = useState(false);
 
   const handleChallengeClick = (game_time) => {
     socket.emit("challenge", { challenged_username: username, game_time });
     setShowChallengeOptions(false);
     setIsChallenging(true);
+    setChallengedUser(username);
+    setChallengeTime(game_time/60);
   };
 
   /*

@@ -60,7 +60,7 @@ def register():
     username_pattern = re.compile(
         r"^(?=[A-Za-z])(?!.*[-_]{2,})[A-Za-z0-9_-]*[A-Za-z0-9]$"
     )
-    if not (3 <= len(username) <= 20) or not username_pattern.match(username):
+    if not (3 <= len(username) <= 12) or not username_pattern.match(username):
         return jsonify({'error': 'Invalid username'}), 400
 
     # Validate the password

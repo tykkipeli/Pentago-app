@@ -1,13 +1,27 @@
 import React from 'react';
 
-const ChallengeArea = ({ isChallenging, incomingChallenge, socket, setIsChallenging, setIncomingChallenge, challengedUser, challengeTime }) => {
+const RematchArea = ({ isChallenging, incomingChallenge, socket, setIsChallenging, setIncomingChallenge, opponentInGameRoom, handleRematch }) => {
   const hasChallenge = isChallenging || incomingChallenge;
+  if (!opponentInGameRoom) {
+    return (
+        <div className='button-container'> 
+            Your opponent has left the game room
+        </div>
+    );
+  }
+  if (!hasChallenge) {
+    return (
+        <div className='button-container' style={{ opacity: 1 }}> 
+            <button onClick={handleRematch} >Rematch</button>
+        </div>
+    );
+  }
   return (
     <div className={`button-container ${hasChallenge ? "challenge-active" : ""}`}>
       {isChallenging && (
         <div className="incoming-challenge-container">
           <div className="incoming-challenge-message">
-            Challenging {challengedUser} for {challengeTime} min!
+            Offering rematch
           </div>
           <button
             onClick={() => {
@@ -23,7 +37,7 @@ const ChallengeArea = ({ isChallenging, incomingChallenge, socket, setIsChalleng
         <>
           <div className="incoming-challenge-container">
             <div className="incoming-challenge-message">
-              {incomingChallenge['challenger']} has challenged you for {incomingChallenge['time'] / 60} min!
+              {incomingChallenge} wants a rematch!
             </div>
             <div className="challenge-buttons">
               <button onClick={() => socket.emit("accept_challenge")}>
@@ -42,9 +56,8 @@ const ChallengeArea = ({ isChallenging, incomingChallenge, socket, setIsChalleng
           </div>
         </>
       )}
-      {!hasChallenge && <div>No pending challenges</div>}
     </div>
   );
 };
 
-export default ChallengeArea;
+export default RematchArea;

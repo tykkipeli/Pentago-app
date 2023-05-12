@@ -3,6 +3,8 @@ import { useLocation } from 'react-router-dom';
 import io from 'socket.io-client';
 import Game from './Game';
 import ChatBox from './ChatBox';
+import RematchArea from './RematchArea';
+import Modal from './Modal';
 import './GamePage.css';
 
 const GamePage = ({ socket }) => {
@@ -11,12 +13,20 @@ const GamePage = ({ socket }) => {
   const [opponentInGameRoom, setOpponentInGameRoom] = useState(true);
   const [isChallenging, setIsChallenging] = useState(false);
   const [gameKey, setGameKey] = useState(0);
+  const [player1Rating, setPlayer1Rating] = useState(0);
+  const [player2Rating, setPlayer2Rating] = useState(0);
+  const [player1, setPlayer1] = useState(null);
+  const [player2, setPlayer2] = useState(null);
+  const [playerTimes, setPlayerTimes] = useState({ 1: 10, 2: 10 });
+  const [currentPlayer, setCurrentPlayer] = useState(1);
+  const [localPlayer, setLocalPlayer] = useState(null);
+  const [modalOpen, setModalOpen] = useState(true);
   const location = useLocation();
-  const { player1, player2, gameID } = location.state;
+  const { playerOne, playerTwo, gameID } = location.state;
   const token = sessionStorage.getItem('token');
 
   const username = sessionStorage.getItem('username');
-  const opponent_username = player1 === username ? player2 : player1;
+  const opponent_username = playerOne === username ? playerTwo : playerOne;
 
   useEffect(() => {
     if (socket) {
@@ -31,12 +41,17 @@ const GamePage = ({ socket }) => {
   useEffect(() => {
     if (socket) {
       socket.emit('join_game', { gameID, username });
+      console.log("Joining game");
     }
   }, [gameKey]);
 
   useEffect(() => {
     console.log("Opponent in game room", opponentInGameRoom);
   }, [opponentInGameRoom]);
+
+  useEffect(() => {
+    console.log("localPlayer:", localPlayer);
+  }, [localPlayer]);
 
   useEffect(() => {
     if (socket) {
@@ -66,6 +81,8 @@ const GamePage = ({ socket }) => {
         setIncomingChallenge(null);
         setGameResult(null);
         setGameKey((prevKey) => prevKey + 1);
+        setModalOpen(true);
+        console.log("game_started received!");
       });
 
       return () => {
@@ -98,36 +115,87 @@ const GamePage = ({ socket }) => {
     setIncomingChallenge(null);
   };
 
+  const handleResign = () => {
+    socket.emit('resign', { gameID });
+  };
+
+  const handleModalClose = () => {
+    setModalOpen(false);
+  };
+
+  const updatesPerSecond = 10;
+  const decimalPlaces = Math.ceil(Math.log10(updatesPerSecond));
+  const whiteUsername = localPlayer === 1 ? username : opponent_username;
+  const blackUsername = localPlayer === 2 ? username : opponent_username;
+
   return (
-    <div>
-      <div className="gamepage-container">
-        {socket && <ChatBox socket={socket} room={gameID} />}
-        <div className="game-container">
-          {socket && <Game key={gameKey} socket={socket} gameID={gameID} gameResult={gameResult} setGameResult={setGameResult} />}
-        </div>
-        {gameResult && opponentInGameRoom && (
-          <div className="rematch-container">
-            {!isChallenging && !incomingChallenge && (
-              <button onClick={handleRematch}>Rematch</button>
-            )}
-            {isChallenging && (
-              <button onClick={handleCancelChallenge}>Cancel Rematch</button>
-            )}
-            {incomingChallenge && (
-              <>
-                <p>{incomingChallenge} wants a rematch!</p>
-                <button onClick={handleAcceptChallenge}>Accept</button>
-                <button onClick={handleRejectChallenge}>Reject</button>
-              </>
-            )}
-          </div>
-        )}
-        {!opponentInGameRoom && (
-          <div className="rematch-container">
-            Your opponent has left the game room.
-          </div>
-        )}
+    <div className="gamepage-container">
+      {socket && <ChatBox socket={socket} room={gameID} />}
+      <div className="game-container">
+        {socket && <Game
+          key={gameKey}
+          socket={socket}
+          gameID={gameID}
+          gameResult={gameResult}
+          setGameResult={setGameResult}
+          setPlayerTimes={setPlayerTimes}
+          setPlayer1Rating={setPlayer1Rating}
+          setPlayer2Rating={setPlayer2Rating}
+          currentPlayer={currentPlayer}
+          setCurrentPlayer={setCurrentPlayer}
+          player1={player1}
+          setPlayer1={setPlayer1}
+          player2={player2}
+          setPlayer2={setPlayer2}
+          localPlayer={localPlayer}
+          setLocalPlayer={setLocalPlayer}
+        />}
       </div>
+      <div className="rightside-wrapper">
+        <div className='rematcharea-wrapper'>
+          {gameResult && (
+            <RematchArea
+              isChallenging={isChallenging}
+              incomingChallenge={incomingChallenge}
+              socket={socket}
+              setIsChallenging={setIsChallenging}
+              setIncomingChallenge={setIncomingChallenge}
+              opponentInGameRoom={opponentInGameRoom}
+              handleRematch={handleRematch}
+            />
+          )}
+        </div>
+        <div className={`player-times-wrapper ${localPlayer === 2 ? 'reverse' : ''}`}>
+          <div className={`player-wrapper ${currentPlayer === 1 ? 'active' : ''} whiteborder`}>
+            <p className="player-time">
+              {Math.floor(playerTimes[1] / 60)}:{String(Math.floor(playerTimes[1] % 60)).padStart(2, "0")}:
+              {String(Math.floor((playerTimes[1] % 1) * 10 ** decimalPlaces)).padStart(decimalPlaces, "0")}
+            </p>
+            <div className="player-details">
+              <p>{player1}</p>
+              <p>{Math.round(player1Rating)}</p>
+            </div>
+          </div>
+          <div className={`player-wrapper ${currentPlayer === 2 ? 'active' : ''} blackborder`}>
+            <p className="player-time">
+              {Math.floor(playerTimes[2] / 60)}:{String(Math.floor(playerTimes[2] % 60)).padStart(2, "0")}:
+              {String(Math.floor((playerTimes[2] % 1) * 10 ** decimalPlaces)).padStart(decimalPlaces, "0")}
+            </p>
+            <div className="player-details">
+              <p>{player2}</p>
+              <p>{Math.round(player2Rating)}</p>
+            </div>
+          </div>
+        </div>
+        <div className="resign-container">
+          {!gameResult && (
+            <button className="resign-button" onClick={handleResign}>
+              Resign
+            </button>
+          )}
+        </div>
+      </div>
+      <Modal gameResult={gameResult} modalOpen={modalOpen} onClose={handleModalClose} whiteUsername={whiteUsername} blackUsername={blackUsername} />
     </div>
   );
 };
