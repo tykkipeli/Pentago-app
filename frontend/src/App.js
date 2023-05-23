@@ -15,6 +15,7 @@ import SignupPage from './components/SignupPage';
 import AnalysisPage from './components/AnalysisPage';
 import RankingPage from './components/RankingPage';
 import ProfilePage from './components/ProfilePage';
+import './components/mobile.css'; 
 
 
 function App() {

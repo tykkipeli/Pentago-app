@@ -53,7 +53,7 @@ const ChatBox = ({ socket, room }) => {
 
   //TODO chatbox divider becomes unclickable when the screen is too narrow
   return (
-    <div className="chat-container" style={{ width: chatVisible ? "25%" : "0%" }}>
+    <div className={chatVisible ? "chat-container visible" : "chat-container hidden"}>
       <div className="chat-wrapper">
         <div className="chat-area" ref={chatAreaRef}>
           {messages.map((message, index) => (

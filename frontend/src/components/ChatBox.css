@@ -1,90 +1,101 @@
 .chat-container {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    border-radius: 0px;
-    padding: 0px;
-    background-color: rgb(26, 25, 25);
-    position: relative;
-  }
-  
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  border-radius: 0px;
+  padding: 0px;
+  background-color: rgb(26, 25, 25);
+  position: relative;
+  transition: width 0.1s ease-in-out;
+}
+
+.chat-container.visible {
+  width: 25%;
+}
+
+.chat-container.hidden {
+  width: 0%;
+}
 
 .chat-wrapper {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    width: 100%;
-    flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  flex-grow: 1;
 }
 
 .chat-area {
-    flex-grow: 1;
-    overflow-y: scroll;
-    padding: 25px;
-    border: 0px solid #ccc;
-    margin-bottom: 10px;
-    border-radius: 20px;
-    box-sizing: border-box;
-    word-break: break-word; 
+  flex-grow: 1;
+  overflow-y: scroll;
+  padding: 25px;
+  border: 0px solid #ccc;
+  margin-bottom: 0px;
+  padding-bottom: 10px;
+  border-radius: 20px;
+  box-sizing: border-box;
+  word-break: break-word;
 }
 
 .send-message-container {
-    display: flex;
-    gap: 10px;
-    justify-content: flex-end;
-    align-items: center;
-    padding: 5px;
-    background-color: black;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 5px;
+  background-color: black;
 }
 
 .chatbox-divider {
-    width: 40px;
-    display: flex;
-    align-items: center;
-    background-color: black;
-    cursor: pointer; 
-    flex-shrink: 0;
-    position: relative;
+  width: 40px;
+  display: flex;
+  align-items: center;
+  background-color: black;
+  cursor: pointer;
+  flex-shrink: 0;
+  position: relative;
 }
 
 .chatbox-divider::before {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 0;
-    height: 0;
-    border-top: 10px solid transparent;
-    border-bottom: 10px solid transparent;
-  }
-  
-  .chatbox-divider.left::before {
-    border-right: 10px solid white; 
-  }
-  
-  .chatbox-divider.right::before {
-    left: 65%;
-    border-left: 10px solid white;
-    border-right: 10px solid transparent;
-  }
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 0;
+  height: 0;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+}
+
+.chatbox-divider.left::before {
+  border-right: 10px solid white;
+}
+
+.chatbox-divider.right::before {
+  left: 65%;
+  border-left: 10px solid white;
+  border-right: 10px solid transparent;
+}
 
 .chatbox-divider:hover {
-    background-color: #442323;
+  background-color: #442323;
 }
 
 .send-message-container input {
-    flex-grow: 1;
-    padding: 5px;
-    border: 1px solid #ccc;
-    border-radius: 3px;
-    background-color: black; 
-    color: white; 
+  flex-grow: 1;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  background-color: black;
+  color: white;
 }
 
 .sendArrow {
-    height: 40px; /* Set the height of the image to 100% of the li item */
-    object-fit: contain; /* This will ensure that the image maintains its aspect ratio while fitting within the given dimensions */
-    padding: 10px;
-    cursor: pointer;
-  }
+  height: 40px;
+  /* Set the height of the image to 100% of the li item */
+  object-fit: contain;
+  /* This will ensure that the image maintains its aspect ratio while fitting within the given dimensions */
+  padding: 10px;
+  cursor: pointer;
+}

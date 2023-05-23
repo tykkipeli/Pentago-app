@@ -55,14 +55,6 @@ const AnalysisPage = () => {
     fetchNextPositionsFromServer(board);
   };
 
-  /*
-  const fetchNextPositionsFromServer = async (newBoard) => {
-    setHoveredMarble(null);
-    setHoveredRotation(null);
-    const nextPositionsMoves = await fetchNextPositions(newBoard, considerSymmetrical);
-    setNextPositions(nextPositionsMoves);
-  };
-*/
   const fetchNextPositionsFromServer = async (newBoard) => {
     setHoveredMarble(null);
     setHoveredRotation(null);
@@ -205,6 +197,15 @@ const AnalysisPage = () => {
 
   return (
     <div className="analysis">
+       <div className="filter-container">
+        <FilterOptions 
+          filterOptions={filterOptions} 
+          setFilterOptions={setFilterOptions} 
+          onApplyFilters={applyFilters} 
+          considerSymmetrical={considerSymmetrical}
+          handleConsiderSymmetricalChange={handleConsiderSymmetricalChange}
+        />
+      </div>
       <div className="game-board-container">
         <GameBoard
           onMove={handleMove}
@@ -231,42 +232,31 @@ const AnalysisPage = () => {
           </button>
         </div>
       </div>
-      <div className="next-positions">
-        {nextPositions.map((position, index) => (
-          <PositionItem
-            key={index}
-            position={position}
-            index={index}
-            onMoveHover={(move, index) => {
-              setHoveredIndex(index);
-              setHoveredMarble(move.placement);
-              setHoveredRotation(move.rotation);
-            }}
-            onMoveLeave={() => {
-              setHoveredIndex(null);
-              setHoveredMarble(null);
-              setHoveredRotation(null);
-            }}
-            onClick={(clickedPosition) => {
-              console.log('Clicked position:', clickedPosition);
-              handleListMove(clickedPosition.move);
-            }}
-          />
-        ))}
-      </div>
-      <div className="filter-container">
-        <div className="consider-symmetrical">
-          <label htmlFor="considerSymmetrical">
-            <input
-              type="checkbox"
-              id="considerSymmetrical"
-              checked={considerSymmetrical}
-              onChange={handleConsiderSymmetricalChange}
+      <div className='positions-container'>
+        <div className='positions-text'>All games</div>
+        <div className="next-positions">
+          {nextPositions.map((position, index) => (
+            <PositionItem
+              key={index}
+              position={position}
+              index={index}
+              onMoveHover={(move, index) => {
+                setHoveredIndex(index);
+                setHoveredMarble(move.placement);
+                setHoveredRotation(move.rotation);
+              }}
+              onMoveLeave={() => {
+                setHoveredIndex(null);
+                setHoveredMarble(null);
+                setHoveredRotation(null);
+              }}
+              onClick={(clickedPosition) => {
+                console.log('Clicked position:', clickedPosition);
+                handleListMove(clickedPosition.move);
+              }}
             />
-            Consider symmetrical positions equal
-          </label>
+          ))}
         </div>
-        <FilterOptions filterOptions={filterOptions} setFilterOptions={setFilterOptions} onApplyFilters={applyFilters} />
       </div>
     </div>
   );

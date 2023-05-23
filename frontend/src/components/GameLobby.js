@@ -6,6 +6,7 @@ import ChallengeArea from './ChallengeArea';
 import ChallengeButton from './ChallengeButton';
 import UserInfo from './UserInfo';
 import icon from '../assets/icon_placeholder.png';
+import './mobile.css';
 
 const GameLobby = ({ socket }) => {
   const [users, setUsers] = useState([]);

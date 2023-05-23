@@ -1,0 +1,92 @@
+.filter-options {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    height: 100%;
+    width: 100%;
+  }
+  
+  .upper-filter {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 35%;
+    gap: 6%;
+  }
+
+  .labeled-input {
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    width: 100%;
+    padding: 5%;
+    gap: 10px;
+  }
+
+  input {
+    outline: none;
+  }
+  
+  .middle-filter {
+    height: 35%;
+    border-top: 2px solid gray;
+  }
+  
+  .lower-filter {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 30%;
+    border-top: 2px solid gray;
+  }
+  
+  .filter-options input {
+    background-color: black;
+    color: white;
+  }
+  
+  .color-button {
+    background-color: #1F75C3;
+    color: white;
+    border: none;
+    margin: 0 0.5em;
+    transition: none;
+  }
+
+  .color-button:hover {
+    background: linear-gradient(to right, #1F75C3, #103C8F);
+  }  
+  
+  .color-button.active {
+    box-shadow: 0 0 0.5em 0.2em gold;  /* highlight active button */
+  }
+  
+  .circle {
+    height: 1em;
+    width: 1em;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  
+  .white-circle {
+    background-color: white;
+  }
+  
+  .black-circle {
+    background-color: black;
+  }
+  
+  .rating-range input{
+    width: 20%;
+  }
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}

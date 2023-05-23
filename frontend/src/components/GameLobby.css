@@ -1,3 +1,4 @@
+
 .lobby-container {
     display: flex;
     justify-content: space-between;
@@ -12,8 +13,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    overflow-x: hidden;
-    /* Hide the horizontal scrollbar */
+    overflow-x: hidden; /* Hide the horizontal scrollbar */
 }
 
 .middle-content {
@@ -109,11 +109,6 @@
     padding: 10px;
   }
 
-
-
-
-
-
 .button-container-wrapper {
     height: 23%;
     min-height: 150px;
@@ -145,15 +140,6 @@
     }
 }
 
-/*
-@keyframes moving-light {
-    0% { background-position: 0% 0%; }
-    25% { background-position: 100% 0%; }
-    50% { background-position: 100% 100%; }
-    75% { background-position: 0% 100%; }
-    100% { background-position: 0% 0%; }
-}
-*/
 .button-container {
     height: 80%;
     width: 73%;
