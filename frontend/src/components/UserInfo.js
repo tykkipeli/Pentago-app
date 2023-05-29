@@ -2,9 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import icon from '../assets/icon_placeholder.png';
-import winIcon from '../assets/voitto_icon_placeholder.png';
-import loseIcon from '../assets/havio_icon_placeholder.png';
-import drawIcon from '../assets/tasapeli_icon_placeholder.png';
+import winIcon from '../assets/voitto.png';
+import loseIcon from '../assets/havio.png';
+import drawIcon from '../assets/tasapeli.png';
 import './UserInfo.css';
 
 const UserInfo = ({ user }) => {

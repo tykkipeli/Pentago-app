@@ -96,7 +96,7 @@ const GamePage = ({ socket }) => {
 
   const handleRematch = () => {
     if (gameResult) {
-      socket.emit("challenge", { challenged_username: opponent_username, game_time: 0 });
+      socket.emit("challenge", { challenged_username: opponent_username, game_time: 180 });
       setIsChallenging(true);
     }
   };

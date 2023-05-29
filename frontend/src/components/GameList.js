@@ -1,9 +1,9 @@
 import React from 'react';
 import './GameList.css';
 import icon from '../assets/icon_placeholder.png';
-import winIcon from '../assets/voitto_icon_placeholder.png';
-import loseIcon from '../assets/havio_icon_placeholder.png';
-import drawIcon from '../assets/tasapeli_icon_placeholder.png';
+import winIcon from '../assets/voitto.png';
+import loseIcon from '../assets/havio.png';
+import drawIcon from '../assets/tasapeli.png';
 
 const GameList = ({ games, navigate, username }) => (
   <table className="games-table">

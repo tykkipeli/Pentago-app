@@ -68,10 +68,11 @@ def on_disconnect():
     print(username, "disconnected")
     if username and username in users_in_lobby:
         on_leave_lobby(username)
-    if request.sid in sid_to_username:
-        del sid_to_username[request.sid]
     # Game-related disconnection handling
     remove_user_from_game(request.sid)
+    #remove socket id:
+    if request.sid in sid_to_username:
+        del sid_to_username[request.sid]
 
 
 #TODO validate game_time
@@ -139,7 +140,7 @@ def on_accept_challenge():
         if challenger_username:
             challenge_data = challenges[challenger_username]
             challenger_sid = get_sid_by_username(challenger_username)
-            game_id = get_game_room(challenged_username, challenged_username)
+            game_id = get_game_room(challenger_username, challenged_username)
             if not game_id:
                 # Generate a unique game ID (use a more robust method for real-world applications)
                 game_id = f"{challenger_username}-{challenged_username}-{time.time()}"
@@ -193,6 +194,11 @@ def on_cancel_challenge():
 @socketio.on("send_message")
 def on_send_message(data):
     message = data["message"]
+    if message == 'test':
+        print("game_rooms", game_rooms)
+        print("challenges", challenges)
+        print("users in lobby", users_in_lobby)
+        print("games", games)
     room = data.get("room", "lobby")
     username = sid_to_username.get(request.sid)
     # Check if the player is in the game room
