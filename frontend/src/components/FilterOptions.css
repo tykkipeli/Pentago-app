@@ -25,11 +25,12 @@
 
   input {
     outline: none;
+    border: none;
   }
   
   .middle-filter {
     height: 35%;
-    border-top: 2px solid gray;
+    /*border-top: 2px solid gray;*/
   }
   
   .lower-filter {
@@ -38,7 +39,7 @@
     align-items: center;
     justify-content: center;
     height: 30%;
-    border-top: 2px solid gray;
+    /*border-top: 2px solid gray;*/
   }
   
   .filter-options input {

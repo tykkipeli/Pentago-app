@@ -8,7 +8,7 @@ from database.models import Users, Games, Positions
 from sqlalchemy.sql.expression import or_, and_
 from app import db
 from sqlalchemy import text
-from database.db_utils import get_position_info, get_users, get_profile_data, get_recent_games_data
+from database.db_utils import get_position_info, get_users, get_profile_data, get_recent_games_data, game_result
 import re
 
 
@@ -158,7 +158,7 @@ def get_user_info(username):
         'id': game.id,
         'opponent_username': game.white.username if game.black_id == user.id else game.black.username,
         'color': 'white' if game.white_id == user.id else 'black',
-        'result': 'win' if game.winner_id == user.id else 'loss',
+        'result': game_result(game, user),
         'date': game.date
     } for game in last_five_games]
 

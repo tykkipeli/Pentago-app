@@ -1,0 +1,128 @@
+  .game-stats {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 2%;
+    padding-bottom: 2%;
+    width: 60%;
+  }
+
+  .game-stats-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    position: relative;
+  }
+
+  .game-types {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+    padding: 10px 0;
+    width: 40%;
+    gap: 5px;
+  }
+
+  .game-type {
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    padding: 10px 20px;
+    background: linear-gradient(to right, #202020, transparent);
+    cursor: pointer;
+    margin-right: 10px;
+    border-radius: 5px;
+    height: 80px;
+    position: relative;
+    overflow: hidden;
+    border: 3px solid;
+    border-right: none;
+    border-image: linear-gradient(to right, black, transparent) 1;
+    transition: background 0.5s ease;
+  }
+  
+  .game-type:hover {
+    background: linear-gradient(to right, #404040, transparent);
+  }
+  
+  .game-type.selected {
+    background: linear-gradient(to right, #606060, transparent);
+  }
+  
+
+  .pie-chart-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 5%;
+  }
+
+  .results-label {
+    margin-bottom: 10px;
+  }
+
+  .pie-chart {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .pie-chart-inner {
+    background: #312f31;
+    border-radius: 50%;
+    width: 70%;
+    height: 70%;
+  }
+
+  .pie-chart-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 30px;
+  }
+
+  .pie-chart-legend {
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    margin-top: 15px;
+  }
+
+  .pie-chart-legend div{
+    display: flex;
+    padding: 10px;
+    align-items: center;
+  }
+
+  .legend-dot {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 20%;
+    margin-right: 15px;
+  }
+
+  .pie-chart-slider {
+    display: flex;
+    overflow-x: hidden;
+    width: 60%;
+    scroll-behavior: smooth;
+  }
+  
+  .chart-and-legend {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-shrink: 0;
+    width: 100%;
+  }
+  
+  

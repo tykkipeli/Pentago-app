@@ -1,0 +1,18 @@
+.games-table {
+  width: 70%;
+  border-collapse: collapse;
+  color: #fff;
+  background-color: #000;
+}
+
+.games-table th,
+.games-table td {
+  padding: 10px;
+  text-align: center;
+  border-bottom: 1px solid #444;
+}
+
+.games-table tr:hover {
+  background-color: #222;
+  cursor: pointer;
+}

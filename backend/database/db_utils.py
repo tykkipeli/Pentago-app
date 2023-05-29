@@ -103,18 +103,18 @@ def get_recent_games_data(user, page, items_per_page):
         'white_username': game.white.username,
         'black_username': game.black.username,
         'move_count': game.move_count,
-        'result': game_result(game),
+        'result': game_result(game, user),
         'date': game.date
     } for game in games]
     return game_data, next_url, prev_url
 
-def game_result(game):
+def game_result(game, user):
     if game.winner_id is None:
-        return '1/2-1/2'
-    elif game.winner_id == game.white_id:
-        return '1-0'
+        return 'draw'
+    elif game.winner_id == user.id:
+        return 'win'
     else:
-        return '0-1'
+        return 'loss'
 
 def generate_sql_query(symmetrical_positions, filters):
     symmetrical_positions_placeholders = ', '.join(
