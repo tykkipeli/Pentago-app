@@ -1,76 +1,76 @@
 /* UserInfo.css */
 .user-info {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .user-info .icon {
-    width: 100%;
-  }
-  
-  .user-info h2 {
-    margin: 10px 0;
-  }
-  
-  .user-info h1 {
-    color: #1F75C3;
-    font-size: 50px;
-    margin: 0px;
-  }
-  
-  .user-info ul {
-    list-style-type: none;
-    padding: 0;
-    width: 100%;
-  }
-  
-  .user-info .game-info {
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    margin: 5px 0;
-    padding: 10px;
-    cursor: pointer;
-  }
-  
-  .user-info .game-info:nth-child(odd) {
-    background-color: #192939;
-  }
-  
-  .user-info .game-info img {
-    margin-right: 5px;
-  }
-  
-  .color-circle {
-    display: inline-block;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    margin-left: 5px;
-    border: 5px solid gray;
-  }
-  
-  .color-circle.white {
-    background: #fff;
-  }
-  
-  .color-circle.black {
-    background: #000;
-  }
-  
-  .result-icon {
-      height: 30px; 
-      object-fit: contain; 
-  }
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
-  .big-icon {
-    height: 30%; 
+.user-info .icon {
+  width: 100%;
+}
+
+.user-info h2 {
+  margin: 10px 0;
+}
+
+.user-info h1 {
+  color: #1F75C3;
+  font-size: 50px;
+  margin: 0px;
+}
+
+.user-info ul {
+  list-style-type: none;
+  padding: 0;
+  width: 100%;
+}
+
+.user-info .game-info {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin: 5px 0;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.user-info .game-info:nth-child(odd) {
+  background-color: #192939;
+  border-radius: 4px;
+}
+
+.user-info .game-info img {
+  margin-right: 5px;
+}
+
+.color-circle {
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-left: 5px;
+  border: 5px solid gray;
+}
+
+.color-circle.white {
+  background: #fff;
+}
+
+.color-circle.black {
+  background: #000;
+}
+
+.result-icon {
+    height: 30px; 
     object-fit: contain; 
-    padding: 30px;
-  }
-  
+}
+
+.big-icon {
+  height: 30%; 
+  object-fit: contain; 
+  padding: 30px;
+}

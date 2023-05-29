@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './FilterOptions.css';
-
+ 
 const FilterOptions = ({ filterOptions, setFilterOptions, onApplyFilters, considerSymmetrical, handleConsiderSymmetricalChange }) => {
   const [color, setColor] = useState(null);
   const [usernameInput, setUsernameInput] = useState('');
@@ -9,48 +9,48 @@ const FilterOptions = ({ filterOptions, setFilterOptions, onApplyFilters, consid
   const [blackRatingMin, setBlackRatingMin] = useState('');
   const [blackRatingMax, setBlackRatingMax] = useState('');
   const [daysAgo, setDaysAgo] = useState('');
-
+ 
   /*
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setFilterOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
   };
   */
-
+ 
   const handleInputChange = (event) => {
     const { value } = event.target;
     setUsernameInput(value);
   };
-
+ 
   const handleColorChange = (color) => {
     setColor(color);
   };
-
+ 
   const handleWhiteRatingMinChange = (event) => {
     const { value } = event.target;
     setWhiteRatingMin(value);
   };
-
+ 
   const handleWhiteRatingMaxChange = (event) => {
     const { value } = event.target;
     setWhiteRatingMax(value);
   };
-
+ 
   const handleBlackRatingMinChange = (event) => {
     const { value } = event.target;
     setBlackRatingMin(value);
   };
-
+ 
   const handleBlackRatingMaxChange = (event) => {
     const { value } = event.target;
     setBlackRatingMax(value);
   };
-
+ 
   const handleDaysAgoChange = (event) => {
     const { value } = event.target;
     setDaysAgo(value);
   };
-
+ 
   const handleApplyFilters = () => {
     setFilterOptions((prevOptions) => ({
       ...prevOptions,
@@ -63,12 +63,12 @@ const FilterOptions = ({ filterOptions, setFilterOptions, onApplyFilters, consid
       daysAgo
     }));
   };
-
+ 
   useEffect(() => {
     console.log("here");
     onApplyFilters();
   }, [filterOptions]);
-
+ 
   return (
     <div className="filter-options">
       <div className='upper-filter'>
@@ -114,7 +114,7 @@ const FilterOptions = ({ filterOptions, setFilterOptions, onApplyFilters, consid
           </div>
         </div>
         <div className='labeled-input'>
-          <label>Black rating range</label>
+          <label>Black rating range:</label>
           <div className='rating-range'>
             <input
               type="number"
@@ -131,8 +131,8 @@ const FilterOptions = ({ filterOptions, setFilterOptions, onApplyFilters, consid
             />
           </div>
         </div>
-        <div>
-          <label>Days Ago:</label>
+        <div className='labeled-input'>
+          <label>Days ago:</label>
           <input
             type="number"
             name="daysAgo"
@@ -143,13 +143,13 @@ const FilterOptions = ({ filterOptions, setFilterOptions, onApplyFilters, consid
       </div>
       <div className='lower-filter'>
         <div className="consider-symmetrical">
-          <label htmlFor="considerSymmetrical">
-            <input
+          <input
               type="checkbox"
               id="considerSymmetrical"
               checked={considerSymmetrical}
               onChange={handleConsiderSymmetricalChange}
             />
+          <label htmlFor="considerSymmetrical">
             Consider symmetrical positions equal
           </label>
         </div>
@@ -160,5 +160,5 @@ const FilterOptions = ({ filterOptions, setFilterOptions, onApplyFilters, consid
     </div>
   );
 };
-
+ 
 export default FilterOptions;

@@ -45,13 +45,6 @@ const Sidebar = ({ isLoggedIn, username, onLogout }) => {
               </NavLink>
             </span>
           </li>
-          <li className={isProfileActive ? "active" : ""}>
-            <span className={`light-source-effect ${isProfileActive ? "active" : ""}`}>
-              <NavLink to={`/profile/${username}`} activeClassName="active">
-                Profile
-              </NavLink>
-            </span>
-          </li>
         </ul>
       </nav>
       <nav className="auth-links">

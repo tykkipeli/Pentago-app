@@ -5,8 +5,10 @@ import LoginForm from './LoginForm';
 const LoginPage = ({ onLogin }) => {
   return (
     <div className="login-page">
-      <h2>Login</h2>
-      <LoginForm onLogin={onLogin} />
+      <div>
+        <h2>Login</h2>
+        <LoginForm onLogin={onLogin} />
+      </div>
     </div>
   );
 };

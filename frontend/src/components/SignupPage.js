@@ -11,9 +11,11 @@ const SignupPage = () => {
   };
 
   return (
-    <div>
-      <h1>Sign up</h1>
-      <SignupForm onSignup={handleSignup} />
+    <div className="signup-page">
+      <div>
+        <h2>Sign up</h2>
+        <SignupForm onSignup={handleSignup} />
+      </div>
     </div>
   );
 };

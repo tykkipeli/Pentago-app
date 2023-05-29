@@ -21,8 +21,10 @@
 .nav-links li.active::after {
   content: "";
   position: absolute;
-  background-color: #103C8F;
-  width: 2px;
+  background-color: #166bb1;
+  /* width: 2px; */
+  box-shadow: 0 0 0 1px #1f81dd;
+  z-index: 1;
   height: 100%;
 }
 
@@ -68,7 +70,6 @@
   padding: 0px;
   justify-content: center;
 }
-
 
 .nav-links,
 .auth-links {
@@ -125,11 +126,6 @@
   z-index: 1;
 }
 
-.nav-links a.active,
-.auth-links a.active {
-  /* font-weight: bold; */
-}
-
 /*Dropdown*/
 
 .username-wrapper {
@@ -149,13 +145,6 @@
   z-index: 1;
 }
 
-/*
-.user-dropdown {
-  display: inline-block;
-  cursor: pointer;
-}
-*/
-
 .login-icon {
   height: 40px; 
   object-fit: contain; 
@@ -168,7 +157,6 @@
   cursor: pointer;
 }
 
-
 .dropdown-wrapper {
   position: absolute;
   right: 0;
@@ -179,29 +167,24 @@
   display: none;
   position: absolute;
   right: 0;
-  background-color: #161616;
-  min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-  padding: 12px 16px;
+  background-color: rgba(0, 0, 0, 0.85);
+  min-width: 200px;
   z-index: 1;
   flex-direction: column;
-  gap: 8px;
 }
 
 .dropdown-content a {
   color: #fff;
   text-decoration: none;
   display: block;
-  padding: 8px 12px;
+  padding: 20px 0px;
   transition: background-color 0.3s, color 0.3s;
 }
 
 .dropdown-content a:hover {
-  background-color: #525252;
-  color: #fff;
+  background-color: rgba(255, 255, 255, 0.3);
 }
 
 .user-dropdown:hover .dropdown-content {
   display: flex;
 }
-

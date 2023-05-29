@@ -8,15 +8,15 @@
   position: relative;
   transition: width 0.1s ease-in-out;
 }
-
+ 
 .chat-container.visible {
-  width: 25%;
+  width: 20%;
 }
-
+ 
 .chat-container.hidden {
   width: 0%;
 }
-
+ 
 .chat-wrapper {
   display: flex;
   flex-direction: column;
@@ -24,7 +24,7 @@
   width: 100%;
   flex-grow: 1;
 }
-
+ 
 .chat-area {
   flex-grow: 1;
   overflow-y: scroll;
@@ -36,7 +36,7 @@
   box-sizing: border-box;
   word-break: break-word;
 }
-
+ 
 .send-message-container {
   display: flex;
   gap: 10px;
@@ -45,7 +45,7 @@
   padding: 5px;
   background-color: black;
 }
-
+ 
 .chatbox-divider {
   width: 40px;
   display: flex;
@@ -55,7 +55,15 @@
   flex-shrink: 0;
   position: relative;
 }
-
+ 
+.chatbox-divider.right:hover {
+  background-color: rgb(14, 14, 14);
+}
+ 
+.chatbox-divider.left:hover {
+  background-color: rgb(14, 14, 14);
+}
+ 
 .chatbox-divider::before {
   content: "";
   position: absolute;
@@ -67,21 +75,17 @@
   border-top: 10px solid transparent;
   border-bottom: 10px solid transparent;
 }
-
+ 
 .chatbox-divider.left::before {
   border-right: 10px solid white;
 }
-
+ 
 .chatbox-divider.right::before {
   left: 65%;
   border-left: 10px solid white;
   border-right: 10px solid transparent;
 }
-
-.chatbox-divider:hover {
-  background-color: #442323;
-}
-
+ 
 .send-message-container input {
   flex-grow: 1;
   padding: 5px;
@@ -90,7 +94,7 @@
   background-color: black;
   color: white;
 }
-
+ 
 .sendArrow {
   height: 40px;
   /* Set the height of the image to 100% of the li item */

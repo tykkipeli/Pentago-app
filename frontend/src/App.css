@@ -1,9 +1,9 @@
 * {
   box-sizing: border-box;
 }
-
-@import url('https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap');
-
+ 
+@import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
+ 
 html,
 body {
   margin: 0;
@@ -11,72 +11,127 @@ body {
   width: 100%;
   height: 100%;
   color: white;
-  font-family: 'Times New Roman', Times, serif, sans-serif;
-  /*font-family: 'Dancing Script', sans-serif; */ 
+  font-family: 'Montserrat', sans-serif;
 }
-
-
+ 
+ 
 .app {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
 }
-
+ 
 .content {
   flex-grow: 1;
   height: 91vh;
 }
-
+ 
 body {
+  /* Background of the whole website */
   background-color: #312f31;
-  /*background-image: linear-gradient(to bottom right, #3d0b0b, hsl(260, 100%, 1%));*/
   background-attachment: fixed;
 }
-
-
-
+ 
 /* Hide scrollbar by default */
 *::-webkit-scrollbar {
   width: 0;
 }
-
+ 
 * {
   scrollbar-width: none;
 }
-
+ 
 /* Show scrollbar on hover */
 *:hover::-webkit-scrollbar {
   width: 6px;
 }
-
+ 
 /*
 *:hover::-webkit-scrollbar-track {
   background-color: #f5f5f5;
   border-radius: 3px;
 }
 */
+ 
 *:hover::-webkit-scrollbar-thumb {
   background-color: #c1c1c1;
   border-radius: 3px;
 }
-
+ 
 *:hover {
   scrollbar-width: thin;
   scrollbar-color: #c1c1c1 #f5f5f5;
 }
-
+ 
 button {
   padding: 13px 20px;
   background-color: #103C8F;
   color: white;
-  /*font-weight: bold; */
   border: none;
-  border-radius: 10px;
+  border-radius: 7px;
   cursor: pointer;
-  transition: background-color 0.4s;
   /* Add a transition for a smoother hover effect */
+  transition: background-color 0.4s;
 }
-
+ 
 button:hover {
-  background-color: rgb(185, 10, 40);
+  background-color: #1F75C3;
+}
+ 
+.centerHome {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+ 
+/* LOGIN PAGE CSS */
+ 
+.login-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgb(22, 22, 22);
+  width: 500px;
+  height: 400px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 5px;
+  text-align: center;
+}
+ 
+.login-page h2 {
+  padding: 5px;
+}
+ 
+.login-unit input {
+  font-size: 14px;
+  margin-left: 5px;
+}
+ 
+.login-unit {
+  padding-bottom: 30px;
+}
+ 
+/* SIGNUP PAGE CSS */
+ 
+.signup-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgb(22, 22, 22);
+  width: 500px;
+  height: 400px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 5px;
+  text-align: center;
+}
+ 
+.signup-page h2 {
+  padding: 5px;
 }

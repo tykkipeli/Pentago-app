@@ -52,21 +52,24 @@ const SignupForm = ({ onSignup }) => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <h2>Sign up</h2>
-      <div>
-        <label>Username:</label>
+      <div className="login-unit">
+        <label htmlFor="signup-username">Username: </label>
         <input
           type="text"
           value={username}
+          placeholder="Username"
           onChange={(e) => setUsername(e.target.value)}
+          id="signup-username"
         />
       </div>
-      <div>
-        <label>Password:</label>
+      <div className="login-unit">
+        <label htmlFor="signup-password">Password: </label>
         <input
           type="password"
           value={password}
+          placeholder="Password"
           onChange={(e) => setPassword(e.target.value)}
+          id="signup-password"
         />
       </div>
       {error && <p>{error}</p>}
