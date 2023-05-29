@@ -183,3 +183,6 @@ def is_valid_integer(s):
         return True
     except ValueError:
         return False
+
+def valid_game_time(game_time):
+    return game_time in [3*60, 5*60, 10*60, 20*60, 60*60]

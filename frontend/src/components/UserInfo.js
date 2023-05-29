@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import icon from '../assets/icon_placeholder.png';
 import winIcon from '../assets/voitto_icon_placeholder.png';
 import loseIcon from '../assets/havio_icon_placeholder.png';
+import drawIcon from '../assets/tasapeli_icon_placeholder.png';
 import './UserInfo.css';
 
 const UserInfo = ({ user }) => {
@@ -31,8 +32,14 @@ const UserInfo = ({ user }) => {
       <ul>
         {userData.recent_games && userData.recent_games.map((game, index) => (
           <li key={index} onClick={() => navigate(`/analysis/${game.id}`)} className="game-info">
+            <div>
             vs {game.opponent_username}
-            <img src={game.result === 'win' ? winIcon : loseIcon} className="result-icon" alt="result" />
+            </div>
+            <img src={
+              game.result === 'win' ? winIcon :
+                game.result === 'loss' ? loseIcon :
+                  drawIcon
+            } className="result-icon" alt="result" />
             <span className={`color-circle ${game.color}`}></span>
           </li>
         ))}

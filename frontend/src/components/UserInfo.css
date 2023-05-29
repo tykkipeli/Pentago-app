@@ -27,6 +27,7 @@
   width: 100%;
 }
 
+/*
 .user-info .game-info {
   width: 100%;
   display: flex;
@@ -38,13 +39,37 @@
   cursor: pointer;
 }
 
-.user-info .game-info:nth-child(odd) {
-  background-color: #192939;
-  border-radius: 4px;
+.user-info .game-info img {
+  margin-right: 5px;
+}
+*/
+
+.user-info .game-info {
+  display: grid;
+  grid-template-columns: minmax(40%, 40%) minmax(40px, 100px) 1fr;
+  align-items: center;
+  margin: 5px 0;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.user-info .game-info div {
+  grid-column: 1;
 }
 
 .user-info .game-info img {
-  margin-right: 5px;
+  grid-column: 2;
+  justify-self: center;  /* This will keep the image centered in its grid cell */
+}
+
+.user-info .game-info span {
+  grid-column: 3;
+  justify-self: end;  /* This will push the color circle to the right of its grid cell */
+}
+
+.user-info .game-info:nth-child(odd) {
+  background-color: #192939;
+  border-radius: 4px;
 }
 
 .color-circle {

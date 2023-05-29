@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const LoginForm = ({ onLogin }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(''); // Add error state
+
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,6 +23,7 @@ const LoginForm = ({ onLogin }) => {
       // Call onLogin with the token and username
       onLogin(data.token, username);
       setError('');
+      navigate("/");
     } else {
       // Handle login error
       console.log("login error")

@@ -54,12 +54,12 @@ const GameLobby = ({ socket }) => {
     });
 
     socket.on("users", (initialUsers) => {
-
+      /*
       for (let i = 0; i < 100; i++) {
         let newString = `User ${i}`;
         initialUsers.push(newString);
       }
-
+      */
       const filteredUsers = initialUsers.filter((user) => user !== own_username);
       setUsers(filteredUsers);
     });

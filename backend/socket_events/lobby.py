@@ -2,7 +2,7 @@ from flask import request
 from flask_socketio import join_room, leave_room, emit
 from app import socketio
 from auth import get_username_from_token
-from utils import users_in_lobby, challenges, sid_to_username, get_sid_by_username, lobby_lock
+from utils import users_in_lobby, challenges, sid_to_username, get_sid_by_username, lobby_lock, valid_game_time
 import time
 import random
 import bleach
@@ -80,6 +80,8 @@ def on_challenge(data):
     print("on challenge called")
     challenged_username = data["challenged_username"]
     game_time = data["game_time"]
+    if not valid_game_time(game_time):
+        return
     with lobby_lock:
         challenger_username = sid_to_username.get(request.sid)
         challenged_sid = get_sid_by_username(challenged_username)

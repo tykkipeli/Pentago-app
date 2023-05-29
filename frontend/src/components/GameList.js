@@ -3,6 +3,7 @@ import './GameList.css';
 import icon from '../assets/icon_placeholder.png';
 import winIcon from '../assets/voitto_icon_placeholder.png';
 import loseIcon from '../assets/havio_icon_placeholder.png';
+import drawIcon from '../assets/tasapeli_icon_placeholder.png';
 
 const GameList = ({ games, navigate, username }) => (
   <table className="games-table">
@@ -23,10 +24,16 @@ const GameList = ({ games, navigate, username }) => (
           <tr key={game.id} onClick={() => navigate(`/analysis/${game.id}`)}>
             <td><div className={`color-circle ${playedAs}`}></div></td>
             <td><div className='user-wrapper'>
-                    <img src={icon} className="icon" alt="icon" />
-                    {opponent}
-                  </div></td>
-            <td><img src={game.result === 'win' ? winIcon : loseIcon} className="result-icon" alt="result" /></td>
+              <img src={icon} className="icon" alt="icon" />
+              {opponent}
+            </div></td>
+            <td>
+              <img src={
+                game.result === 'win' ? winIcon :
+                  game.result === 'loss' ? loseIcon :
+                    drawIcon
+              } className="result-icon" alt="result" />
+            </td>
             <td>{game.move_count}</td>
             <td>{new Date(game.date).toLocaleDateString()}</td>
           </tr>

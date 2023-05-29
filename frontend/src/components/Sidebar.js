@@ -57,9 +57,7 @@ const Sidebar = ({ isLoggedIn, username, onLogout }) => {
             </div>
             <div className="dropdown-wrapper">
               <div className="dropdown-content">
-                <NavLink to="/some-page-1">Some Page 1</NavLink>
-                <NavLink to="/some-page-2">Some Page 2</NavLink>
-                <NavLink to="/some-page-3">Some Page 3</NavLink>
+                <NavLink to={`/profile/${username}`}>Profiili</NavLink>
                 <NavLink onClick={onLogout} to="/">Logout</NavLink>
               </div>
             </div>
