@@ -16,3 +16,16 @@
   background-color: #222;
   cursor: pointer;
 }
+
+
+@media screen and (max-width: 600px) {
+    .games-table {
+        width: 100%;
+        left: 0;
+    }
+
+    .games-table th,
+    .games-table td {
+        padding: 0px;
+    }
+}

@@ -77,3 +77,24 @@
 .arrow-button:hover {
     background-color: black;
 }
+
+
+
+
+@media screen and (max-width: 600px) {
+    .analysis {
+        flex-direction: column;
+    }
+
+    .filter-container {
+        width: 100%;
+    }
+
+    .game-board-container {
+        width: 100%;
+    }
+
+    .positions-container {
+        width: 100%;
+    }
+}

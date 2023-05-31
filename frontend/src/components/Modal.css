@@ -82,3 +82,17 @@
 .rating-change {
     font-size: 0.7em;
 }
+
+@media screen and (max-width: 600px) {
+    .modal-overlay {
+        width: 100%;
+    }    
+
+    .modal-content h1 {
+        font-size: 1.3em;
+    }
+
+    .game-result-reason {
+        font-size: 1.2em;
+    }
+}

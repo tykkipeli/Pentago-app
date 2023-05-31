@@ -69,3 +69,24 @@ button:disabled {
   object-fit: contain; 
   padding: 30px;
 }
+
+@media screen and (max-width: 600px) {
+  .profile-page {
+    align-items: flex-start;
+  }
+  .general-data-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: auto;
+    padding: 10px;
+  }
+  
+  .profile-icon {
+    height: 130px;
+  }
+
+  .username-container h2 {
+    font-size: 30px;
+  }
+}

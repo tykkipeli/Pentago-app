@@ -3,7 +3,7 @@ import random
 
 def get_dynamic_k_factor(games_played):
     base_k = 16
-    initial_k = 400
+    initial_k = 150
     decay_rate = 0.06
 
     k_factor = base_k + (initial_k - base_k) * np.exp(-decay_rate * games_played)
@@ -46,10 +46,10 @@ def player1_wins(rating1, rating2):
 
 def example():
     # Example usage
-    rating1 = 1000
-    rating2 = 2000
+    rating1 = 1500
+    rating2 = 1500
     games_played1 = 1
-    games_played2 = 200
+    games_played2 = 1
     outcome = 1  # Player 1 wins (1), Player 2 wins (0)
 
     for i in range(1):
@@ -58,21 +58,31 @@ def example():
         games_played2 += 1
         print("Player 1 new rating:", rating1)
         print("Player 2 new rating:", rating2)
-        outcome = 1 - outcome
+    outcome = 1 - outcome
+    for i in range(1):
+        rating1, rating2 = get_new_elo_ratings(rating1, rating2, games_played1, games_played2, outcome)
+        games_played1 += 1
+        games_played2 += 1
+        print("Player 1 new rating:", rating1)
+        print("Player 2 new rating:", rating2)
 
-example()
+#example()
 
 def k_factor_test():
-    for i in range(200):
+    for i in range(100):
         print(i, get_dynamic_k_factor(i+1))
 
+#k_factor_test()
+
 def test():
-    true_ratings = [0, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000]
-    current_ratings = [1500]*12
-    games_played = [0]*12
+    true_ratings = [0, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500]
+    #true_ratings = [0, 800, 1300, 1700, 2200]
+    current_ratings = [1500]*len(true_ratings)
+    #current_ratings = true_ratings[:]
+    games_played = [0]*len(true_ratings)
     
-    for i in range(100):  # simulate 10000 games
-        player1, player2 = random.sample(range(1, 12), 2)  # pick two distinct players at random
+    for i in range(1000):  # simulate 10000 games
+        player1, player2 = random.sample(range(1, len(true_ratings)), 2)  # pick two distinct players at random
         
         if player1_wins(true_ratings[player1], true_ratings[player2]):
             outcome = 1
@@ -84,15 +94,32 @@ def test():
         games_played[player2] += 1
         if i %10000 == 0:
             print(games_played)
-            for i in range(1, 12):
+            for i in range(1, len(true_ratings)):
                 print(f"Player {i}: {current_ratings[i]}")
         
     print("Final ratings:")
     print(games_played)
-    for i in range(1, 12):
+    for i in range(1, len(true_ratings)):
         print(f"Player {i}: {current_ratings[i]}")
 
+
+#test()
 #print(k_factor_test())
 
+def test2():
+    true_rating = 2500
+    current_rating = 1500
+    games_played = 0
+    for i in range(25):
+        if player1_wins(true_rating, current_rating):
+            outcome = 1
+        else:
+            outcome = 0
+        current_rating, _ = get_new_elo_ratings(current_rating, current_rating, games_played, games_played, outcome)
+        games_played += 1
+    print(games_played)
+    print(current_rating)
+
+#test2()
 
 

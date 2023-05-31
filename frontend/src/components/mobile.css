@@ -1,4 +1,8 @@
 @media screen and (max-width: 600px) {
+    :root {
+        --cell-size: ${CELL_SIZE_MOBILE_CSS};
+      }
+
     .content {
         height: auto;
         width: auto;
@@ -47,6 +51,5 @@
     .topbar {
         overflow: scroll;
     }
-
 
 }

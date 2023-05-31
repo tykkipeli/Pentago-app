@@ -4,17 +4,22 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { Global, css } from '@emotion/react';
-import { CELL_SIZE_CSS } from './constants';
+import { CELL_SIZE_CSS, CELL_SIZE_MOBILE_CSS } from './constants';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <>
     <Global
       styles={css`
-        :root {
-          --cell-size: ${CELL_SIZE_CSS};
-        }
-      `}
+    :root {
+      --cell-size: ${CELL_SIZE_CSS};
+    }
+    @media (max-width: 600px) {
+      :root {
+        --cell-size: ${CELL_SIZE_MOBILE_CSS};
+      }
+    }
+  `}
     />
     <App />
   </>

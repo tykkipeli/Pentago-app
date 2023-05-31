@@ -162,3 +162,31 @@
   height: 25%;
   padding: 10%;
 }
+
+@media screen and (max-width: 600px) {
+  .gamepage-container {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .game-container {
+    width: 100%;
+  }
+
+  .rightside-wrapper {
+    width: 100%;
+  }
+
+  .rematcharea-wrapper {
+    height: 100%;
+  }
+
+  .resign-container {
+    height: 100px;
+    justify-content: center;
+  }
+
+  .resign-button {
+    position: relative;
+  }
+}

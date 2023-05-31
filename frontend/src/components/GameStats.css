@@ -126,3 +126,20 @@
   }
   
   
+  @media screen and (max-width: 600px) {
+    .game-stats {
+      width: 100%;
+    }
+
+    .game-stats-wrapper {
+      flex-direction: column;
+    }
+
+    .game-types {
+      width: 100%;
+    }
+
+    .chart-and-legend {
+      flex-direction: column;
+    }
+}
