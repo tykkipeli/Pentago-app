@@ -3,7 +3,7 @@ import React from 'react';
 import './Quadrant.css';
 import Arrows from './Arrows';
 import Cell from './Cell';
-import { CELL_SIZE } from '../constants';
+import { CELL_SIZE, CELL_SIZE_MOBILE } from '../constants';
 
 
 const calculateShift = (angle, sideLength, quadrant) => {
@@ -59,9 +59,18 @@ const Quadrant = ({
   );
 
   // Calculate the shift based on the current rotation angle.
-  const sideLength = 3 * CELL_SIZE;
+  let sideLength = 3 * CELL_SIZE;
   const angle = (rotation % 360 + 360) % 360;
-  const shift = calculateShift(angle, sideLength, quadrant);
+  let shift = calculateShift(angle, sideLength, quadrant);
+
+  if (typeof window !== 'undefined') {
+    sideLength = 3 * (window.innerWidth <= 600 ? CELL_SIZE_MOBILE : CELL_SIZE);
+    shift = calculateShift(angle, sideLength, quadrant);
+    window.addEventListener('resize', () => {
+      sideLength = 3 * (window.innerWidth <= 600 ? CELL_SIZE_MOBILE : CELL_SIZE);
+      shift = calculateShift(angle, sideLength, quadrant);
+    });
+  }
 
   return (
     <div>

@@ -46,6 +46,15 @@ def get_users(offset, limit):
         offset).limit(limit).all()
     return users
 
+def get_num_games(user):
+    games_played = Games.query.filter(
+        or_(Games.black_id == user.id, Games.white_id == user.id)).count()
+    return games_played
+
+def get_user_object(username):
+    user = Users.query.filter_by(username=username).first()
+    return {"username": user.username, "rating": user.rating, "numGames": get_num_games(user)}
+
 def get_profile_data(user):
     games_played = Games.query.filter(
         or_(Games.black_id == user.id, Games.white_id == user.id)).count()
@@ -67,6 +76,9 @@ def get_profile_data(user):
     last_played_game = Games.query.filter(or_(
         Games.black_id == user.id, Games.white_id == user.id)).order_by(Games.date.desc()).first()
     last_played_date = last_played_game.date if last_played_game else None
+    first_played_game = Games.query.filter(or_(
+        Games.black_id == user.id, Games.white_id == user.id)).order_by(Games.date.asc()).first()
+    first_played_date = first_played_game.date if first_played_game else None
 
     profile_data = {
         "username": user.username,
@@ -76,6 +88,7 @@ def get_profile_data(user):
         "losses": losses,
         "draws": draws,
         "last_played_date": last_played_date,
+        "first_played_date": first_played_date,
         "wins_as_white": wins_as_white,
         "wins_as_black": wins_as_black,
         "losses_as_white": losses_as_white,
@@ -85,33 +98,68 @@ def get_profile_data(user):
     }
     return profile_data
 
+
 def get_recent_games_data(user, page, items_per_page):
     offset = (page - 1) * items_per_page
-    games = Games.query.filter(
-        (Games.white_id == user.id) | (Games.black_id == user.id)
-    ).order_by(Games.id.desc()).offset(offset).limit(items_per_page).all()
+    limit = items_per_page
+
+    sql = text("""
+        SELECT 
+            g.id,
+            u1.username AS white_username,
+            u2.username AS black_username,
+            g.move_count,
+            g.winner_id,
+            g.date,
+            u1.rating AS white_rating,
+            (SELECT COUNT(*) FROM games WHERE black_id = u1.id OR white_id = u1.id) AS white_games_played,
+            u2.rating AS black_rating,
+            (SELECT COUNT(*) FROM games WHERE black_id = u2.id OR white_id = u2.id) AS black_games_played
+        FROM 
+            games g
+        INNER JOIN
+            users u1
+        ON
+            g.white_id = u1.id
+        INNER JOIN
+            users u2
+        ON
+            g.black_id = u2.id
+        WHERE 
+            u1.id = :user_id OR u2.id = :user_id
+        ORDER BY
+            g.date DESC
+        LIMIT :limit OFFSET :offset
+    """)
+
+    games = db.session.execute(sql, {"user_id":user.id, "limit":limit, "offset":offset})
+    game_data = [{
+        'id': game[0],
+        'white_username': game[1],
+        'black_username': game[2],
+        'move_count': game[3],
+        'result': game_result(game[4], user.id),  # Note: You may need to adjust this function for the new data structure
+        'date': game[5],
+        'white_rating': game[6],
+        'white_games_played': game[7],
+        'black_rating': game[8],
+        'black_games_played': game[9]
+    } for game in games]
+
     total_games = Games.query.filter(
         (Games.white_id == user.id) | (Games.black_id == user.id)
     ).count()
+    
     has_next = (page * items_per_page) < total_games
     has_prev = page > 1
     next_url = url_for('get_recent_games', username=user.username, page=page + 1) if has_next else None
     prev_url = url_for('get_recent_games', username=user.username, page=page - 1) if has_prev else None
-
-    game_data = [{
-        'id': game.id,
-        'white_username': game.white.username,
-        'black_username': game.black.username,
-        'move_count': game.move_count,
-        'result': game_result(game, user),
-        'date': game.date
-    } for game in games]
     return game_data, next_url, prev_url
 
-def game_result(game, user):
-    if game.winner_id is None:
+def game_result(winner_id, user_id):
+    if winner_id is None:
         return 'draw'
-    elif game.winner_id == user.id:
+    elif winner_id == user_id:
         return 'win'
     else:
         return 'loss'

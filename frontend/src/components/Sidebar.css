@@ -188,3 +188,13 @@
 .user-dropdown:hover .dropdown-content {
   display: flex;
 }
+
+.mobile-logout {
+  display: none;
+}
+
+@media screen and (max-width: 600px) {
+  .mobile-logout {
+    display: flex;
+  }
+}

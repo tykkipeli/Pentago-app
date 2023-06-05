@@ -21,7 +21,7 @@ def on_join_game(data):
         return emit('error', {'message': 'Not authenticated'}, room=request.sid)
     game_id = data['gameID']
     username = sid_to_username[request.sid]
-    print(username, "joined the game")
+    #print(username, "joined the game")
     with games_lock:
         if game_id not in games:
             return emit('error', {'message': 'Game not found'}, room=request.sid)
@@ -33,16 +33,15 @@ def on_join_game(data):
             return emit('error', {'message': 'Player has already joined the game'}, room=request.sid)
         player_info['sid'] = request.sid
         join_room(game_id)
-        print("here we are")
         if all(player.get('sid') is not None for player in game['players']):
             game['lastMoveTimestamp'] = time.time()
             starting_player = next(player for player in game['players'] if player['symbol'] == game['currentPlayer'])
             other_player = next(player for player in game['players'] if player['symbol'] != game['currentPlayer'])
             player1_rating = get_user_rating(starting_player['username'])
             player2_rating = get_user_rating(other_player['username'])
-            print("starting game")
-            print(starting_player['username'], player1_rating)
-            print(other_player['username'], player2_rating)
+            #print("starting game")
+            #print(starting_player['username'], player1_rating)
+            #print(other_player['username'], player2_rating)
             emit('game_info', {
                 'startingPlayer': starting_player['username'],
                 'otherPlayer': other_player['username'],
@@ -72,10 +71,10 @@ def remove_user_from_game(sid):
                 leave_room(game_id, sid=sid)
                 socketio.emit("user_left_game", username, room=game_id, include_self=False)
                 if username in room['players']:
-                    print("removing username from room")
+                    #print("removing username from room")
                     room['players'].remove(username)
                 if not room['players']:
-                    print("delete game_room")
+                    #print("delete game_room")
                     del game_rooms[game_id]
 
 def is_authenticated_for_game(sid, game_id):
@@ -113,14 +112,14 @@ def on_make_move(data):
             emit('opponent_move', move, room=game_id, include_self=False)
             update_game_position(game, move, player_index)
             switch_current_player(game, player_index)
-            print(game['playerTimes'])
+            #print(game['playerTimes'])
             emit("player_times_after_move", {
                 'playerTimes': game["playerTimes"],
                 'timestamp': time.time()},
                 room=game_id)
             check_game_over(game, game_id)
-            print(game['board'])
-            print(game['board_history'])
+            #print(game['board'])
+            #print(game['board_history'])
 
 @socketio.on('resign')
 def on_resign(data):

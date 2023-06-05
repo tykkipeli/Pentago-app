@@ -6,6 +6,7 @@ import ChallengeArea from './ChallengeArea';
 import ChallengeButton from './ChallengeButton';
 import UserInfo from './UserInfo';
 import icon from '../assets/icon_placeholder.png';
+import { getIcon } from '../utils/iconutils';
 import './mobile.css';
 
 const GameLobby = ({ socket }) => {
@@ -19,25 +20,14 @@ const GameLobby = ({ socket }) => {
 
   const navigate = useNavigate();
 
-
-  const handleUserClick = (username) => {
-    setSelectedUser(username);
-  };
-
   useEffect(() => {
-    console.log(selectedUser);
-  }, [selectedUser]);
-
-  useEffect(() => {
-    console.log("joining lobby debug");
     socket.emit("join_lobby");
     socket.emit("request_users");
 
-    socket.on('user_joined', (username) => {
-      console.log(username + " joined");
+    socket.on('user_joined', (user) => {
       setUsers((prevUsers) => {
-        if (!prevUsers.includes(username) && username !== own_username) {
-          return [...prevUsers, username];
+        if (!prevUsers.includes(user) && user.username !== own_username) {
+          return [...prevUsers, user];
         } else {
           return prevUsers;
         }
@@ -45,8 +35,7 @@ const GameLobby = ({ socket }) => {
     });
 
     socket.on('user_left', (username) => {
-      console.log("user left" + username);
-      setUsers((prevUsers) => prevUsers.filter((prevUser) => prevUser !== username));
+      setUsers((prevUsers) => prevUsers.filter((prevUser) => prevUser.username !== username));
       if (username === selectedUser) {
         setSelectedUser(null);
         setIsChallenging(false);
@@ -60,7 +49,7 @@ const GameLobby = ({ socket }) => {
         initialUsers.push(newString);
       }
       */
-      const filteredUsers = initialUsers.filter((user) => user !== own_username);
+      const filteredUsers = initialUsers.filter((user) => user.username !== own_username);
       setUsers(filteredUsers);
     });
 
@@ -93,7 +82,6 @@ const GameLobby = ({ socket }) => {
     });
 
     return () => {
-      console.log("leaving lobby");
       socket.emit("leave_lobby");
       socket.off("user_joined");
       socket.off("user_left");
@@ -109,8 +97,8 @@ const GameLobby = ({ socket }) => {
   return (
     <div className="lobby-container">
       <ChatBox socket={socket} room="lobby" />
-      <div class="middle-container">
-        <div class="middle-content">
+      <div className="middle-container">
+        <div className="middle-content">
           <div className="button-container-wrapper">
             <h1>Game Lobby</h1>
             <ChallengeArea
@@ -125,20 +113,20 @@ const GameLobby = ({ socket }) => {
           </div>
           <div className="user-list-wrapper">
             <ul className="user-list">
-              {users.map((username, index) => (
+              {users.map((user, index) => (
                 <li
-                  key={username}
-                  className={selectedUser === username ? "selected" : ""}
-                  onClick={() => setSelectedUser(username)}
+                  key={user.username}
+                  className={selectedUser === user.username ? "selected" : ""}
+                  onClick={() => setSelectedUser(user.username)}
                 >
                   <div className='user-wrapper'>
-                    <img src={icon} className="icon" alt="icon" />
-                    {username}
+                    <img src={getIcon(user.rating, user.numGames)} className="icon" alt="icon" />
+                    {user.username}
                   </div>
 
                   {incomingChallenge === null && !isChallenging ? (
                     <ChallengeButton
-                      username={username}
+                      username={user.username}
                       socket={socket}
                       setIsChallenging={setIsChallenging}
                       setChallengedUser={setChallengedUser}

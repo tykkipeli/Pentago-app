@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import icon from '../assets/icon_placeholder.png';
+import { getIcon } from '../utils/iconutils';
 import GameStats from './GameStats';
 import GameList from './GameList';
 import './ProfilePage.css';
@@ -13,6 +14,11 @@ const ProfilePage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    setGamePage(1);
+    window.scrollTo(0, 0);
+  }, [username]);
+
+  useEffect(() => {
     fetchUserProfile(username);
     fetchRecentGames(username, gamePage);
   }, [username, gamePage]);
@@ -21,7 +27,6 @@ const ProfilePage = () => {
     try {
       const response = await fetch(`/api/profile/${username}`);
       const data = await response.json();
-      console.log(data);
       setProfileData(data);
     } catch (error) {
       console.error("Failed to fetch profile data:", error);
@@ -57,18 +62,20 @@ const ProfilePage = () => {
   return (
     <div className="profile-page">
       <div className='username-container'>
-        <img src={icon} className="profile-icon" alt="icon" />
+        <img src={getIcon(profileData.rating, profileData.wins + profileData.losses + profileData.draws)} className="profile-icon" alt="icon" />
         <h2>{profileData.username}</h2>
+        <img src={icon} className="profile-icon extra-icon" alt="icon" style={{ visibility: 'hidden' }} />
       </div>
+
       <div className='general-data-container'>
-        <div>
-          Joined:
+        <div className='data-item'>
+          <strong>First played:</strong> {profileData.first_played_date ? new Date(profileData.first_played_date).toLocaleDateString() : "-"}
         </div>
-        <div className='profile-rating'>
+        <div className='profile-rating data-item'>
           <strong>Rating:</strong> {profileData.rating.toFixed(2)}
         </div>
-        <div >
-          <strong>Last played:</strong> {new Date(profileData.last_played_date).toLocaleDateString()}
+        <div className='data-item'>
+          <strong>Last played:</strong> {profileData.last_played_date ? new Date(profileData.last_played_date).toLocaleDateString() : "-"}
         </div>
       </div>
       <GameStats profileData={profileData} />

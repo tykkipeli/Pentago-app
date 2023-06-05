@@ -29,9 +29,9 @@ const GameStats = ({ profileData }) => {
     }
 
     const total = wins + losses + draws;
-    const winPercentage = (wins / total) * 100;
-    const lossPercentage = (losses / total) * 100;
-    const drawPercentage = 100 - winPercentage - lossPercentage; // rest of the circle
+    const winPercentage = total > 0 ? (wins / total) * 100 : 0;
+    const lossPercentage = total > 0 ? (losses / total) * 100 : 0;
+    const drawPercentage = total > 0 ? 100 - winPercentage - lossPercentage: 0; // rest of the circle
 
     return {
       winPercentage,

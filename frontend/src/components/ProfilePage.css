@@ -40,6 +40,7 @@ button:disabled {
 .username-container {
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 
 .username-container h2 {
@@ -58,10 +59,35 @@ button:disabled {
   gap: 10px;
   background-color: #202020;
   font-size: 20px;
+  border-radius: 7px;
+}
+
+.general-data-container table {
+  width: 100%;
+} 
+
+.data-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.data-item strong {
+  margin-right: 10px;
 }
 
 .profile-rating {
-  color: rgb(50, 50, 192);
+  color: #1F75C3;
+  font-size: 30px;
+  display: flex;
+  align-items: center;
+}
+
+.profile-rating strong {
+  color: white;
+  font-size: 20px;
+  margin-right: 10px;
 }
 
 .profile-icon {
@@ -86,7 +112,11 @@ button:disabled {
     height: 130px;
   }
 
+  .extra-icon {
+    display: none;
+  }
+
   .username-container h2 {
-    font-size: 30px;
+    font-size: 18px;
   }
 }

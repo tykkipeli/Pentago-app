@@ -3,6 +3,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client';
 import GameBoard from './GameBoard';
 import './Game.css';
+import { useUser } from '../contexts/user-context';
+
 
 const Game = ({
   gameID,
@@ -30,6 +32,8 @@ const Game = ({
   const [lastTimestamp, setLastTimestamp] = useState(null);
   const player1Ref = useRef(null);
   const player2Ref = useRef(null);
+  const localPlayerRef = useRef(null);
+  const { setRating, setNumGames } = useUser();
 
   const updatePlayerTimes = (player, newTime) => {
     setPlayerTimes((prevTimes) => {
@@ -43,6 +47,10 @@ const Game = ({
   }, [player1, player2]);
 
   useEffect(() => {
+    localPlayerRef.current = localPlayer;
+  }, [localPlayer]);
+
+  useEffect(() => {
     if (socket) {
       const username = sessionStorage.getItem('username');
       /*
@@ -50,13 +58,11 @@ const Game = ({
       */
 
       socket.on("player_times_after_move", (data) => {
-        console.log("Updated player times after move:", data);
         setPlayerTimes(data.playerTimes);
         setLastTimestamp(data.timestamp);
       });
 
       socket.on('game_info', (data) => {
-        console.log("game_info received");
         setPlayer1(data.startingPlayer);
         setPlayer2(data.otherPlayer);
         setLocalPlayer(data.startingPlayer === username ? 1 : 2);
@@ -68,16 +74,12 @@ const Game = ({
       });
 
       socket.on('opponent_move', (move) => {
-        console.log("opponent_move received")
-        console.log(move);
-        console.log(`within socketEvent: ${currentPlayer}`);
         setOpponentMove(move);
         setCurrentPlayer((prevPlayer) => prevPlayer === 1 ? 2 : 1);
       });
 
       // use useRef, because state variable values are no more up to date within the callback functions closure
       socket.on('game_over', (result) => {
-        console.log("game over received")
         let message = "";
         let reason = "";
         if (result.winner) {
@@ -116,6 +118,16 @@ const Game = ({
           }
         });
         setCurrentPlayer(null);
+        const numGames = sessionStorage.getItem('numGames');
+        setNumGames(numGames+1);
+        sessionStorage.setItem('numGames', numGames+1);
+        if (localPlayerRef.current == 1) {
+          setRating(result.new_ratings.white);
+          sessionStorage.setItem('rating', result.new_ratings.white);
+        } else {
+          setRating(result.new_ratings.black);
+          sessionStorage.setItem('rating', result.new_ratings.black);
+        }
       });
 
       return () => {
@@ -149,12 +161,6 @@ const Game = ({
       return () => clearInterval(timer);
     }
   }, [currentPlayer, gameResult, lastTimestamp]);
-
-
-  useEffect(() => {
-    console.log("current player: " + currentPlayer)
-  }, [currentPlayer]);
-
 
   const handleMove = (move) => {
     socket.emit('make_move', { gameID, move, player: currentPlayer });

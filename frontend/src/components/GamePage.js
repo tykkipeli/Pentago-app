@@ -41,17 +41,8 @@ const GamePage = ({ socket }) => {
   useEffect(() => {
     if (socket) {
       socket.emit('join_game', { gameID, username });
-      console.log("Joining game");
     }
   }, [gameKey]);
-
-  useEffect(() => {
-    console.log("Opponent in game room", opponentInGameRoom);
-  }, [opponentInGameRoom]);
-
-  useEffect(() => {
-    console.log("localPlayer:", localPlayer);
-  }, [localPlayer]);
 
   useEffect(() => {
     if (socket) {
@@ -72,7 +63,6 @@ const GamePage = ({ socket }) => {
       });
 
       socket.on("user_left_game", (username) => {
-        console.log("USER LEFT RECEIVED");
         setOpponentInGameRoom(false);
       });
 

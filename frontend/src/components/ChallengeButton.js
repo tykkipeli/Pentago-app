@@ -43,6 +43,7 @@ const ChallengeButton = ({ username, socket, setIsChallenging, setChallengedUser
         </button>
         {timeOptions.map((time, index) => (
           <button
+            key={time}
             className={`fixed-size-button color${index + 1}`}
             onClick={() => handleChallengeClick(time)}
           >

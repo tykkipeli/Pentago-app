@@ -107,16 +107,18 @@ def test():
 #print(k_factor_test())
 
 def test2():
-    true_rating = 2500
+    true_rating = 500
     current_rating = 1500
     games_played = 0
-    for i in range(25):
+    for i in range(15):
         if player1_wins(true_rating, current_rating):
             outcome = 1
         else:
             outcome = 0
+        outcome = 0
         current_rating, _ = get_new_elo_ratings(current_rating, current_rating, games_played, games_played, outcome)
         games_played += 1
+        print(current_rating)
     print(games_played)
     print(current_rating)
 

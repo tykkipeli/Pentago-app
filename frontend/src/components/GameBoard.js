@@ -12,12 +12,6 @@ import quadrant4Image from '../assets/oikeaala.png';
 // for debugging:
 function printBoardState(boardState) {
   console.table(boardState);
-  /*
-  console.log('Current Board State:');
-  boardState.forEach((row) => {
-    console.log(row.join(' '));
-  });
-  */
 }
 
 const GameBoard = ({

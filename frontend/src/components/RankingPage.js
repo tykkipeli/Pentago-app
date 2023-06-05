@@ -32,7 +32,7 @@ const RankingPage = () => {
   return (
     <div className="ranking-page">
       <h2>Ranking</h2>
-      <table>
+      <table className='games-table'>
         <thead>
           <tr>
             <th>Rank</th>
@@ -52,8 +52,10 @@ const RankingPage = () => {
           ))}
         </tbody>
       </table>
-      <button onClick={loadPreviousUsers} disabled={offset === 0}>Load previous</button>
-      <button onClick={loadMoreUsers}>Load more</button>
+      <div className='game-pagination'>
+        <button onClick={loadPreviousUsers} disabled={offset === 0}>Previous</button>
+        <button onClick={loadMoreUsers}>Next</button>
+      </div>
     </div>
   );
 };

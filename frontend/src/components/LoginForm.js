@@ -21,7 +21,7 @@ const LoginForm = ({ onLogin }) => {
     if (response.ok) {
       const data = await response.json();
       // Call onLogin with the token and username
-      onLogin(data.token, username);
+      onLogin(data.token, username, data.rating, data.numGames);
       setError('');
       navigate("/");
     } else {

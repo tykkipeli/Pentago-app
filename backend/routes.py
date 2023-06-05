@@ -8,7 +8,7 @@ from database.models import Users, Games, Positions
 from sqlalchemy.sql.expression import or_, and_
 from app import db
 from sqlalchemy import text
-from database.db_utils import get_position_info, get_users, get_profile_data, get_recent_games_data, game_result
+from database.db_utils import get_position_info, get_users, get_profile_data, get_recent_games_data, game_result, get_num_games
 import re
 
 
@@ -32,7 +32,7 @@ def login():
     # Verify the provided password
     if user and check_password_hash(user.password, password):
         token = create_encoded_token(username)
-        return jsonify({"status": "success", "token": token})
+        return jsonify({"status": "success", "token": token, "rating": user.rating, "numGames": get_num_games(user)})
     else:
         return jsonify({"status": "error", "message": "Invalid username or password"}), 401
 
@@ -145,7 +145,6 @@ def get_recent_games(username):
 
 @app.route('/api/userinfo/<username>', methods=['GET'])
 def get_user_info(username):
-    print("get_user_info", username)
     user = Users.query.filter_by(username=username).first()
     if not user:
         return jsonify({"error": "User not found"}), 404
@@ -164,6 +163,7 @@ def get_user_info(username):
 
     user_info = {
         "rating": user.rating,
+        "num_games": get_num_games(user),
         "recent_games": game_data,
     }
 

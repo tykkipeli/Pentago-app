@@ -5,6 +5,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { Global, css } from '@emotion/react';
 import { CELL_SIZE_CSS, CELL_SIZE_MOBILE_CSS } from './constants';
+import { UserProvider } from './contexts/user-context';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -21,7 +22,9 @@ root.render(
     }
   `}
     />
-    <App />
+    <UserProvider>
+      <App />
+    </UserProvider>
   </>
 );
 

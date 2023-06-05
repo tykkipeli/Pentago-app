@@ -2,7 +2,7 @@ import copy
 from bitboard import bitboards_to_board, board_to_bitboards
 from threading import Lock
 
-users_in_lobby = set()
+users_in_lobby = []
 challenges = {}  # {challenger_username: {"challenged": challenged_username, "time": game_time}}
 sid_to_username = {}
 lobby_lock = Lock()

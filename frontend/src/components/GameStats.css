@@ -29,7 +29,7 @@
     align-items: center;
     justify-content: left;
     padding: 10px 20px;
-    background: linear-gradient(to right, #202020, transparent);
+    background: linear-gradient(to right, #1b1b1b, transparent);
     cursor: pointer;
     margin-right: 10px;
     border-radius: 5px;
@@ -43,11 +43,11 @@
   }
   
   .game-type:hover {
-    background: linear-gradient(to right, #404040, transparent);
+    background: linear-gradient(to right, black, transparent);
   }
   
   .game-type.selected {
-    background: linear-gradient(to right, #606060, transparent);
+    background: linear-gradient(to right, black, transparent);
   }
   
 

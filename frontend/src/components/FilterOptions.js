@@ -65,7 +65,6 @@ const FilterOptions = ({ filterOptions, setFilterOptions, onApplyFilters, consid
   };
  
   useEffect(() => {
-    console.log("here");
     onApplyFilters();
   }, [filterOptions]);
  

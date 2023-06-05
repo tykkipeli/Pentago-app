@@ -5,6 +5,7 @@ import icon from '../assets/icon_placeholder.png';
 import winIcon from '../assets/voitto.png';
 import loseIcon from '../assets/havio.png';
 import drawIcon from '../assets/tasapeli.png';
+import { getIcon } from '../utils/iconutils';
 import './UserInfo.css';
 
 const UserInfo = ({ user }) => {
@@ -25,7 +26,7 @@ const UserInfo = ({ user }) => {
 
   return (
     <div className="user-info">
-      <img src={icon} className="big-icon" alt="icon" />
+      <img src={getIcon(userData.rating, userData.num_games)} className="big-icon" alt="icon" />
       <h2>{user}</h2>
       <h1>{Math.round(userData.rating)}</h1>
       <h3>Most recent Games</h3>

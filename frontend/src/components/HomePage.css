@@ -1,0 +1,22 @@
+.homeContainer {
+  padding: 5%;
+  padding-top: 0px;
+  ;
+}
+
+.homeContainer section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.welcomeSection h1 {
+  font-size: 60px;
+}
+
+@media screen and (max-width: 600px) {
+  .welcomeSection h1 {
+    font-size: 40px;
+  }
+}

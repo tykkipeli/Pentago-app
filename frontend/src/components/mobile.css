@@ -22,7 +22,9 @@
     }
 
     .chatbox-divider {
+        visibility: hidden;
         width: 0px;
+        left: -50px;
     }
 
     .middle-container {
