@@ -118,7 +118,10 @@ const Game = ({
           }
         });
         setCurrentPlayer(null);
-        const numGames = sessionStorage.getItem('numGames');
+        let numGames = parseInt(sessionStorage.getItem('numGames'));
+        if (isNaN(numGames)) {
+          numGames = 0; // Default value
+        }
         setNumGames(numGames+1);
         sessionStorage.setItem('numGames', numGames+1);
         if (localPlayerRef.current == 1) {

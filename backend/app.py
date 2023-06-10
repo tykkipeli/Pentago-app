@@ -14,7 +14,14 @@ app.secret_key = getenv("SECRET_KEY")
 app.config["SQLALCHEMY_DATABASE_URI"] = getenv("DATABASE_URL")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode='gevent')
+
+env = getenv('FLASK_ENV')
+if env == 'production':
+    cors_origins = ["https://pentagopark.com", "https://www.pentagopark.com"]
+else:
+    cors_origins = "*"
+
+socketio = SocketIO(app, cors_allowed_origins=cors_origins, async_mode='gevent')
 
 from routes import *
 from socket_events import *

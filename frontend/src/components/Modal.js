@@ -1,7 +1,28 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './Modal.css';
 
 const Modal = ({ gameResult, modalOpen, onClose, whiteUsername, blackUsername }) => {
+
+  useEffect(() => {
+    // get the modal-overlay element
+    const overlay = document.querySelector('.modal-overlay');
+
+    // if the element doesn't exist, return immediately
+    if (!overlay) {
+      return;
+    }
+
+    // if the element exists, continue as normal
+    const timeoutId = setTimeout(() => {
+      overlay.style.opacity = '1';
+    }, 100); // start the transition 100ms after the modal is rendered
+
+    // clean up
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [gameResult, modalOpen]);
+
   if (!gameResult || !modalOpen) {
     return null;
   }

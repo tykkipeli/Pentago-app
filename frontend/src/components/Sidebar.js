@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink, useMatch } from 'react-router-dom';
 import './Sidebar.css';
-import logo from '../assets/logo_placeholderpng.png';
+import logo from '../assets/logo.png';
 /*import icon from '../assets/icon_placeholder.png'; */
 import { useUser } from '../contexts/user-context';
 import { getIcon } from '../utils/iconutils';
