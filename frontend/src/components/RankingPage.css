@@ -15,7 +15,14 @@
 }
 
 .ranking-page .games-table td {
-  padding: 30px;
+  padding: 0px;
+}
+
+.ranking-user-wrapper {
+  position: relative;
+  padding: 8px;
+  display: flex;
+  align-items: center;
 }
 
 @media screen and (max-width: 600px) {

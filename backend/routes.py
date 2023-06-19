@@ -114,7 +114,7 @@ def get_users_route():
     if offset < 0 or limit < 0:
         return jsonify({"error": "Invalid offset or limit"}), 404
     users = get_users(offset, limit)
-    return jsonify([user.to_dict() for user in users])
+    return jsonify(users)
 
 @app.route('/api/profile/<username>', methods=['GET'])
 def get_profile_route(username):

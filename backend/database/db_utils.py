@@ -46,6 +46,36 @@ def get_users(offset, limit):
         offset).limit(limit).all()
     return users
 
+#This can be made for efficient by first taking the offset and limit and only then left joining the users table with the games table
+def get_users(offset, limit):
+    sql = text("""
+        SELECT 
+            users.username, 
+            users.rating, 
+            COALESCE(COUNT(games.id), 0) AS game_count 
+        FROM 
+            users 
+        LEFT JOIN 
+            games ON users.id = games.black_id OR users.id = games.white_id 
+        GROUP BY 
+            users.id 
+        ORDER BY 
+            users.rating DESC, 
+            users.id 
+        OFFSET :offset 
+        LIMIT :limit;
+    """)
+    result = db.session.execute(sql, {'offset': offset, 'limit': limit})
+    users = [
+        {
+            'username': row[0],
+            'rating': row[1],
+            'game_count': row[2]
+        } 
+        for row in result
+    ]
+    return users
+
 def get_num_games(user):
     games_played = Games.query.filter(
         or_(Games.black_id == user.id, Games.white_id == user.id)).count()
@@ -138,7 +168,7 @@ def get_recent_games_data(user, page, items_per_page):
         'white_username': game[1],
         'black_username': game[2],
         'move_count': game[3],
-        'result': game_result(game[4], user.id),  # Note: You may need to adjust this function for the new data structure
+        'result': game_result(game[4], user.id),
         'date': game[5],
         'white_rating': game[6],
         'white_games_played': game[7],

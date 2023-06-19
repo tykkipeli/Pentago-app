@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './RankingPage.css';
+import { getIcon } from '../utils/iconutils';
 
 const RankingPage = () => {
   const [users, setUsers] = useState([]);
@@ -45,7 +46,10 @@ const RankingPage = () => {
             <tr key={user.username}>
               <td>{offset + index + 1}</td>
               <td>
-                <Link to={`/profile/${user.username}`}>{user.username}</Link>
+                <div className='ranking-user-wrapper'>
+                  <img src={getIcon(user.rating, user.numGames)} className="icon" alt="icon" />
+                  <Link to={`/profile/${user.username}`}>{user.username}</Link>
+                </div>
               </td>
               <td>{user.rating.toFixed(2)}</td>
             </tr>

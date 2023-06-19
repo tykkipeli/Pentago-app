@@ -15,7 +15,8 @@ class Users(db.Model):
 
     def __repr__(self):
         return f'<User {self.username}>'
-    
+
+
 class Games(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     black_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
