@@ -46,11 +46,11 @@ def player1_wins(rating1, rating2):
 
 def example():
     # Example usage
-    rating1 = 1500
+    rating1 = 1600
     rating2 = 1500
-    games_played1 = 1
-    games_played2 = 1
-    outcome = 1  # Player 1 wins (1), Player 2 wins (0)
+    games_played1 = 20
+    games_played2 = 20
+    outcome = 0  # Player 1 wins (1), Player 2 wins (0)
 
     for i in range(1):
         rating1, rating2 = get_new_elo_ratings(rating1, rating2, games_played1, games_played2, outcome)
@@ -66,7 +66,7 @@ def example():
         print("Player 1 new rating:", rating1)
         print("Player 2 new rating:", rating2)
 
-#example()
+example()
 
 def k_factor_test():
     for i in range(100):

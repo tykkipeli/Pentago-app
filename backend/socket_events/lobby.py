@@ -44,9 +44,9 @@ def on_join_lobby():
 def on_leave_lobby(username=None):
     username = sid_to_username.get(request.sid, username)
     with lobby_lock:
+        remove_user_from_challenges(username)
         user_to_remove = next((u for u in users_in_lobby if u['username'] == username), None)
         if user_to_remove:
-            remove_user_from_challenges(username)
             leave_room("lobby")
             users_in_lobby.remove(user_to_remove)
             emit("user_left", username, room="lobby", broadcast=True)
@@ -67,9 +67,8 @@ def remove_user_from_challenges(username):
 def handle_disconnect(sid):
     # Lobby-related disconnection handling
     username = sid_to_username.get(sid)
-    user_to_remove = next((u for u in users_in_lobby if u['username'] == username), None)
-    if user_to_remove:
-        on_leave_lobby(username)
+    #user_to_remove = next((u for u in users_in_lobby if u['username'] == username), None)
+    on_leave_lobby(username)
     # Game-related disconnection handling
     remove_user_from_game(sid)
     # remove socket id:

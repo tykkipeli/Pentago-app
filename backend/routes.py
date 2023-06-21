@@ -157,7 +157,7 @@ def get_user_info(username):
         'id': game.id,
         'opponent_username': game.white.username if game.black_id == user.id else game.black.username,
         'color': 'white' if game.white_id == user.id else 'black',
-        'result': game_result(game, user),
+        'result': game_result(game.winner_id, user.id),
         'date': game.date
     } for game in last_five_games]
 
