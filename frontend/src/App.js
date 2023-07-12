@@ -45,9 +45,13 @@ function App() {
         query: { token },
       })
 
+      newSocket.on('connect', () => {
+        console.log('Successfully connected')
+      })
+
       newSocket.on('disconnect', (reason) => {
         // perform any cleanup or navigation here
-        console.log('Disconnecting')
+        console.log('Disconnected. Reason:', reason)
         handleLogout()
       })
       newSocket.on('connect_error', (error) => {
@@ -56,6 +60,26 @@ function App() {
 
       newSocket.on('connect_timeout', (timeout) => {
         console.log('Connection Timeout', timeout)
+      })
+
+      newSocket.on('error', (error) => {
+        console.log('An error occurred. Error:', error)
+      })
+
+      newSocket.on('connect_failed', () => {
+        console.log('Connection failed')
+      })
+
+      newSocket.on('reconnect_failed', () => {
+        console.log('Reconnection failed')
+      })
+
+      newSocket.on('reconnect_attempt', () => {
+        console.log('Attempting to reconnect')
+      })
+
+      newSocket.on('reconnecting', (attemptNumber) => {
+        console.log('Reconnecting. Attempt number:', attemptNumber)
       })
 
       setRating(rating)

@@ -34,7 +34,7 @@ def login():
         token = create_encoded_token(username)
         return jsonify({"status": "success", "token": token, "rating": user.rating, "numGames": get_num_games(user)})
     else:
-        return jsonify({"status": "error", "message": "Invalid username or password"}), 401
+        return jsonify({"status": "error", "message": "Invalid username or password."}), 401
 
 
 @app.route("/api/logout", methods=["POST"])

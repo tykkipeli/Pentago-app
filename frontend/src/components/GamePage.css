@@ -63,14 +63,14 @@
 }
 
 .player-wrapper.active .player-time {
-  font-size: 60px; 
+  font-size: 50px; 
 }
 
 .player-time {
   width: 50%;
   height: 100%;
-  font-size: 40px;
-  flex: 0.4;
+  font-size: 35px;
+  font-family: 'monospace';
   padding-left: 5%;
   padding-right: 0%;
   margin: 0px;
@@ -86,7 +86,6 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  flex: 0.6;
   padding-left: 0px; 
   overflow: hidden;
 }
@@ -188,5 +187,13 @@
 
   .resign-button {
     position: relative;
+  }
+
+  .player-wrapper.active .player-time {
+    font-size: 45px; 
+  }
+  
+  .player-time {
+    font-size: 30px;
   }
 }
